@@ -61,7 +61,7 @@ class profile_define_branching extends profile_define_base {
     public function define_validate_specific($data, $files) {
         $err = array();
 
-        if ($data->param1 == 'menu') {
+        if ($data->param1 == 1) {
 
             $data->param2 = str_replace("\r", '', $data->param2);
 
@@ -84,7 +84,7 @@ class profile_define_branching extends profile_define_base {
      * @return array|stdClass
      */
     public function define_save_preprocess($data) {
-        if ($data->param1 == 'menu') {
+        if ($data->param1 == 1) {
             $data->param2 = str_replace("\r", '', $data->param2);
         }
 

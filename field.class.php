@@ -81,6 +81,7 @@ class profile_field_branching extends profile_field_base {
             $size = $this->field->param2;
             // Create the form field.
             $mform->addElement('text', $this->inputname, format_string($this->field->name), ' size="'.$size.'" ');
+            $mform->setType($this->inputname, PARAM_MULTILANG);
         }
 
         $jsmod = array(
@@ -123,7 +124,7 @@ class profile_field_branching extends profile_field_base {
         if ($this->field->param1 == 1) {
             return isset($this->options[$data]) ? $this->options[$data] : null;
         } else {
-            parent::edit_save_data_preprocess($data, $datarecord);
+            return $data;
         }
     }
 
