@@ -30,7 +30,7 @@ class profile_define_branching extends profile_define_base {
      */
     public function define_form_specific($form) {
         // Param 1 is the type of field.
-        $options = array('text', 'menu');
+        $options = array('text', 'menu', 'qual');
         $form->addElement('select', 'param1', get_string('fieldtype', 'profilefield_branching'), $options);
         $form->setType('param1', PARAM_TEXT);
 
@@ -45,6 +45,10 @@ class profile_define_branching extends profile_define_base {
         // Param 4 is the value to show field on.
         $form->addElement('text', 'param4', get_string('branchvalue', 'profilefield_branching'), 'size="50"');
         $form->setType('param4', PARAM_TEXT);
+
+        // Param 5 is the item in the field list.
+        $form->addElement('text', 'param5', get_string('itemname', 'profilefield_branching'), 'size="50"');
+        $form->setType('param5', PARAM_TEXT);
 
         // Default data.
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
@@ -61,12 +65,12 @@ class profile_define_branching extends profile_define_base {
     public function define_validate_specific($data, $files) {
         $err = array();
 
-        if ($data->param1 == 1) {
+        if ($data->param1 != 0) {
 
             $data->param2 = str_replace("\r", '', $data->param2);
 
             // Check that we have at least 2 options.
-            if (($options = explode("\n", $data->param1)) === false) {
+            if (($options = explode("\n", $data->param2)) === false) {
                 $err['param2'] = get_string('profilemenunooptions', 'admin');
             } else if (count($options) < 2) {
                 $err['param2'] = get_string('profilemenutoofewoptions', 'admin');
@@ -84,7 +88,7 @@ class profile_define_branching extends profile_define_base {
      * @return array|stdClass
      */
     public function define_save_preprocess($data) {
-        if ($data->param1 == 1) {
+        if ($data->param1 != 0) {
             $data->param2 = str_replace("\r", '', $data->param2);
         }
 
