@@ -194,11 +194,66 @@ class profile_field_branching extends profile_field_base {
         $value = $this->field->param4;
 
         if (isset($usernew->{$property}) && $usernew->$property == $value) {
-            if (empty($usernew->{$this->inputname})) {
+            // The firts item in the select menus has the value of '0'. This needs to be valid.
+            if (empty($usernew->{$this->inputname}) && $usernew->{$this->inputname} !== '0') {
                 $errors[$this->inputname] = get_string('invalidentry', 'profilefield_branching');
             }
         }
 
         return $errors;
+    }
+
+    public function edit_save_data($usernew) {
+        global $DB;
+
+        if (!isset($usernew->{$this->inputname})) {
+            // Field not present in form, probably locked and invisible - skip it.
+            return;
+        }
+
+        // If this field is hidden we don't want to save a value. This is mostly for the menu type ones.
+        $property = "profile_field_" . $this->field->param3;
+        $value = $this->field->param4;
+        $data = new stdClass();
+        switch ($this->field->param1) {
+            case 0:
+            case 1:
+                $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
+                if ($parent->datatype == 'menu') {
+                    $options = explode("\n", $parent->param1);
+                    $desired = $options[$value];
+                } else {
+                    $desired = $value;
+                }
+                if (isset($usernew->{$property}) && $usernew->$property == $desired) {
+                    $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
+                } else {
+                    $usernew->{$this->inputname} = '';
+                }
+                break;
+            case 2:
+                if ($usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
+                    $haystack = $usernew->$property . "\n"; // This is so that we don't match Cert II when searching for Cert I.
+                    if (isset($usernew->{$property}) && strstr($haystack, $this->field->param5 . "\n") !== false) {
+                        $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
+                    } else {
+                        $usernew->{$this->inputname} = '';
+                    }
+                } else {
+                    $usernew->{$this->inputname} = '';
+                }
+                break;
+        }
+        // Do the standard stuff, but without the param assign.
+        $data->userid  = $usernew->id;
+        $data->fieldid = $this->field->id;
+        $data->data    = $usernew->{$this->inputname};
+
+        if ($dataid = $DB->get_field('user_info_data', 'id', array('userid' => $data->userid, 'fieldid' => $data->fieldid))) {
+            $data->id = $dataid;
+            $DB->update_record('user_info_data', $data);
+        } else {
+            $DB->insert_record('user_info_data', $data);
+        }
     }
 }
