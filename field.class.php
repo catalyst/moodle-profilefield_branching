@@ -190,7 +190,7 @@ class profile_field_branching extends profile_field_base {
         global $DB;
 
         $errors = array();
-        $property = $this->field->param3;
+        $property = "profile_field_" . $this->field->param3;
         $value = $this->field->param4;
 
         if (isset($usernew->{$property}) && $usernew->$property == $value) {
