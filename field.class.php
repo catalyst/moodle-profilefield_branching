@@ -53,10 +53,9 @@ class profile_field_branching extends profile_field_base {
                 $options = array();
             }
             $this->options = array();
-            if (!empty($this->field->required)) {
-                $this->options[''] = get_string('choose').'...';
-            }
+            $this->options[''] = get_string('choose').'...';
             foreach ($options as $key => $option) {
+                $key++;
                 $this->options[$key] = format_string($option); // Multilang formatting.
             }
 

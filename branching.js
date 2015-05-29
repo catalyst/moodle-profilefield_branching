@@ -45,7 +45,7 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
             });
         }
     } else { // Qual.
-        if (Y.one('#id_profile_field_vettrakrstate').get('value') == 1) {
+        if (Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
             M.profile_field_branching.checkQual(fieldid, parentid, itemname);
         } else { // It's not the required state, so do nothing.
             Y.one(fieldid).setStyle('display', 'none');
