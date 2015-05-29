@@ -18,7 +18,7 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
             Y.one(parentname).on('change', function(e) {
                 // The double check on state is not ideal, but it is required to fix a weird corner case
                 // bug where if it is already checked and changed from Vic to something else it updates.
-                if (this.get('checked') && Y.one('#id_profile_field_vettrakrstate').get('value') == 1) {
+                if (this.get('checked') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
                     Y.one(fieldid).setStyle('display', '');
                     Y.one(fieldid).set('value', "");
                 } else {
@@ -52,7 +52,7 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         }
 
         Y.one('#id_profile_field_vettrakrstate').on('change', function(e) {
-            if (this.get('value') == 1) {
+            if (this.get('value') == 2) {
                 M.profile_field_branching.checkQual(fieldid, parentid, itemname);
             } else { // It's not the required state, so do nothing.
                 Y.one(fieldid).setStyle('display', 'none');
