@@ -30,11 +30,11 @@ class profile_define_branching extends profile_define_base {
      */
     public function define_form_specific($form) {
         // Param 1 is the type of field.
-        $options = array('text', 'menu', 'qual');
+        $options = array('text', 'menu', 'qual', 'declaration');
         $form->addElement('select', 'param1', get_string('fieldtype', 'profilefield_branching'), $options);
         $form->setType('param1', PARAM_TEXT);
 
-        // Param 2 for menu type contains the options or default size.
+        // Param 2 for menu type contains the options, default size or text dump.
         $form->addElement('textarea', 'param2', get_string('param2', 'profilefield_branching'), array('rows' => 6, 'cols' => 40));
         $form->setType('param2', PARAM_TEXT);
 
@@ -65,7 +65,7 @@ class profile_define_branching extends profile_define_base {
     public function define_validate_specific($data, $files) {
         $err = array();
 
-        if ($data->param1 != 0) {
+        if ($data->param1 == 1 || $data->param1 == 2) {
 
             $data->param2 = str_replace("\r", '', $data->param2);
 
@@ -88,7 +88,7 @@ class profile_define_branching extends profile_define_base {
      * @return array|stdClass
      */
     public function define_save_preprocess($data) {
-        if ($data->param1 != 0) {
+        if ($data->param1 == 1 || $data->param1 == 2) {
             $data->param2 = str_replace("\r", '', $data->param2);
         }
 

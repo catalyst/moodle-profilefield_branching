@@ -40,11 +40,12 @@ class profile_field_branching extends profile_field_base {
      * @param int $userid
      */
     public function profile_field_branching($fieldid = 0, $userid = 0) {
+        global $DB;
         // First call parent constructor.
         $this->profile_field_base($fieldid, $userid);
 
         // Only need to do this for select types.
-        if (isset($this->field->param1) && $this->field->param1 != 0) {
+        if (isset($this->field->param1) && ($this->field->param1 == 1 || $this->field->param1 == 2)) {
 
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
@@ -63,6 +64,13 @@ class profile_field_branching extends profile_field_base {
             if ($this->data !== null) {
                 $this->datakey = (int)array_search($this->data, $this->options);
             }
+        } else if (!empty($this->field) && $this->field->param1 == 3) { // Checkbox declaration.
+            $datafield = $DB->get_field('user_info_data', 'data', array('userid' => $this->userid, 'fieldid' => $this->fieldid));
+            if ($datafield !== false) {
+                $this->data = $datafield;
+            } else {
+                $this->data = $this->field->defaultdata;
+            }
         }
     }
 
@@ -74,13 +82,23 @@ class profile_field_branching extends profile_field_base {
     public function edit_field_add($mform) {
         global $PAGE;
 
-        if ($this->field->param1 != 0) {
+        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
             $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options);
-        } else {
+        } else if ($this->field->param1 == 0) {
             $size = $this->field->param2;
             // Create the form field.
             $mform->addElement('text', $this->inputname, format_string($this->field->name), ' size="'.$size.'" ');
             $mform->setType($this->inputname, PARAM_MULTILANG);
+        } else {
+            $text = "<div class=\"id_profile_field_" . $this->field->shortname . "\"><p>";
+            $text .= $this->field->param2;
+            $text .= "</p></div>";
+            $mform->addElement('html', $text);
+            $checkbox = $mform->addElement('advcheckbox', $this->inputname, format_string($this->field->name));
+            if ($this->data == '1') {
+                $checkbox->setChecked(true);
+            }
+            $mform->setType($this->inputname, PARAM_BOOL);
         }
 
         $jsmod = array(
@@ -101,7 +119,7 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform Moodle form instance
      */
     public function edit_field_set_default($mform) {
-        if ($this->field->param1 != 0) {
+        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
             if (false !== array_search($this->field->defaultdata, $this->options)) {
                 $defaultkey = (int)array_search($this->field->defaultdata, $this->options);
             } else {
@@ -124,7 +142,7 @@ class profile_field_branching extends profile_field_base {
      * @return mixed Data or null
      */
     public function edit_save_data_preprocess($data, $datarecord) {
-        if ($this->field->param1 != 0) {
+        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
             return isset($this->options[$data]) ? $this->options[$data] : null;
         } else {
             return $data;
@@ -140,7 +158,7 @@ class profile_field_branching extends profile_field_base {
      * @param stdClass $user User object.
      */
     public function edit_load_user_data($user) {
-        if ($this->field->param1 != 0) {
+        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
             $user->{$this->inputname} = $this->datakey;
         } else {
             parent::edit_load_user_data($user);
@@ -152,7 +170,7 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
-        if ($this->field->param1 != 0) {
+        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
             if (!$mform->elementExists($this->inputname)) {
                 return;
             }
@@ -217,14 +235,23 @@ class profile_field_branching extends profile_field_base {
         switch ($this->field->param1) {
             case 0:
             case 1:
+            case 3:
                 $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
                 if ($parent->datatype == 'menu') {
-                    $options = explode("\n", $parent->param1);
+                    $list = explode("\n", $parent->param1);
+                    // Need to rekey the array;
+                    $i = 1;
+                    $options = array();
+                    foreach ($list as $item) {
+                        $options[$i] = $item;
+                        $i++;
+                    }
                     $desired = $options[$value];
                 } else {
                     $desired = $value;
                 }
-                if (isset($usernew->{$property}) && $usernew->$property == $desired) {
+                // Getting weird errors where some menus report the value, others the option, so just check for both.
+                if (isset($usernew->{$property}) && ($usernew->$property == $desired || $usernew->$property == $value)) {
                     $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
                 } else {
                     $usernew->{$this->inputname} = '';
@@ -253,6 +280,22 @@ class profile_field_branching extends profile_field_base {
             $DB->update_record('user_info_data', $data);
         } else {
             $DB->insert_record('user_info_data', $data);
+        }
+    }
+
+    /**
+     * Display the data for this field
+     *
+     * @return string HTML.
+     */
+    public function display_data() {
+        if ($this->field->param1 == 3) {
+            $options = new stdClass();
+            $options->para = false;
+            $checked = intval($this->data) === 1 ? 'checked="checked"' : '';
+            return '<input disabled="disabled" type="checkbox" name="'.$this->inputname.'" '.$checked.' />';
+        } else {
+            return parent::display_data();
         }
     }
 }
