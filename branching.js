@@ -75,3 +75,29 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         });
     }
 };
+
+M.profile_field_branching_options = {};
+
+M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
+
+    Y.one(parentid).on('change', function(e) {
+        var shortname = this.one('> .fselect').one('#id_param3').get('value');
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+
+                // Remove all existing items.
+                Y.one(fieldid).one('> .fselect').one('#id_param4').get('childNodes').remove();
+
+                var i = 1;
+                for (item of response) {
+                    Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + i + '">' + item + '</option>');
+                    i++;
+                }
+            }
+        };
+        xhr.open('POST', M.cfg.wwwroot + '/user/profile/field/branching/ajax.php', true);
+        xhr.send(JSON.stringify(shortname));
+    });
+};

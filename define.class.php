@@ -29,6 +29,7 @@ class profile_define_branching extends profile_define_base {
      * @param moodleform $form
      */
     public function define_form_specific($form) {
+        global $DB, $PAGE;
         // Param 1 is the type of field.
         $options = array('text', 'menu', 'qual', 'declaration');
         $form->addElement('select', 'param1', get_string('fieldtype', 'profilefield_branching'), $options);
@@ -39,11 +40,17 @@ class profile_define_branching extends profile_define_base {
         $form->setType('param2', PARAM_TEXT);
 
         // Param 3 is the field to branch from.
-        $form->addElement('text', 'param3', get_string('branchfield', 'profilefield_branching'), 'size="50"');
+        $fields = $DB->get_records('user_info_field', array('datatype' => 'menu'), '', 'shortname, param1');
+        $options = array();
+        foreach ($fields as $field) {
+            $options[$field->shortname] = $field->shortname;
+        }
+        $form->addElement('select', 'param3', get_string('branchfield', 'profilefield_branching'), $options);
         $form->setType('param3', PARAM_TEXT);
 
         // Param 4 is the value to show field on.
-        $form->addElement('text', 'param4', get_string('branchvalue', 'profilefield_branching'), 'size="50"');
+        $options = array();
+        $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
 
         // Param 5 is the item in the field list.
@@ -53,6 +60,14 @@ class profile_define_branching extends profile_define_base {
         // Default data.
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
         $form->setType('defaultdata', PARAM_TEXT);
+
+        // Load javascript to populate options.
+        $jsmod = array(
+            'name' => 'profile_field_branching_options',
+            'fullpath' => '/user/profile/field/branching/branching.js'
+        );
+
+        $PAGE->requires->js_init_call('M.profile_field_branching_options.init', array('#fitem_id_param4', '#fitem_id_param3'), false, $jsmod);
     }
 
     /**
