@@ -40,7 +40,7 @@ class profile_define_branching extends profile_define_base {
         $form->setType('param2', PARAM_TEXT);
 
         // Param 3 is the field to branch from.
-        $fields = $DB->get_records('user_info_field', array('datatype' => 'menu'), '', 'shortname, param1');
+        $fields = $DB->get_records_sql("SELECT shortname, param1 FROM {user_info_field} WHERE datatype IN ('menu', 'multicheckbox')", array());
         $options = array();
         foreach ($fields as $field) {
             $options[$field->shortname] = $field->shortname;
@@ -54,7 +54,8 @@ class profile_define_branching extends profile_define_base {
         $form->setType('param4', PARAM_TEXT);
 
         // Param 5 is the item in the field list.
-        $form->addElement('text', 'param5', get_string('itemname', 'profilefield_branching'), 'size="50"');
+        $options = array();
+        $form->addElement('select', 'param5', get_string('itemname', 'profilefield_branching'), $options);
         $form->setType('param5', PARAM_TEXT);
 
         // Default data.

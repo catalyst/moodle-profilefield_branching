@@ -80,8 +80,8 @@ M.profile_field_branching_options = {};
 
 M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
 
-    Y.one(parentid).on('change', function(e) {
-        var shortname = this.one('> .fselect').one('#id_param3').get('value');
+    function populate(shortname, fieldid, parentid) {
+        var name =  Y.one('#id_shortname').get('value');
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -91,13 +91,41 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
                 Y.one(fieldid).one('> .fselect').one('#id_param4').get('childNodes').remove();
 
                 var i = 1;
-                for (item of response) {
-                    Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + i + '">' + item + '</option>');
+                for (item of response[0]) {
+                    if (item == 'checked') {
+                        Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + item.trim() + '">' + item + '</option>');
+                    } else {
+                        Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + i + '">' + item + '</option>');
+                    }
                     i++;
                 }
+                // Set the default if its there.
+                Y.one(fieldid).one('> .fselect').one('#id_param4').set('value', response[2]);
+                // This is only for the multicheckbox qualification type.
+                // Remove all existing items.
+                Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').get('childNodes').remove();
+                for (item of response[1]) {
+                        Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').append('<option value="' + item.trim() + '">' + item + '</option>');
+                }
+                // Set the default if its there.
+                Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').set('value', response[3]);
             }
         };
+        var field = {
+            name: name,
+            shortname: shortname
+        }
+
         xhr.open('POST', M.cfg.wwwroot + '/user/profile/field/branching/ajax.php', true);
-        xhr.send(JSON.stringify(shortname));
+        xhr.send(JSON.stringify(field));
+    }
+
+    // Run at page load.
+    populate(Y.one(parentid).one('> .fselect').one('#id_param3').get('value'), fieldid, parentid);
+
+    // Run on change.
+    Y.one(parentid).on('change', function(e) {
+        var shortname = this.one('> .fselect').one('#id_param3').get('value');
+        populate(shortname, fieldid, parentid);
     });
 };

@@ -30,7 +30,18 @@ echo $OUTPUT->header();
 @header('Content-type: application/json; charset=utf-8');
 
 $f = json_decode(file_get_contents('php://input'));
-$field = $DB->get_record('user_info_field', array('shortname' => $f));
-
-$response = explode(PHP_EOL, $field->param1);
+$thisfield = $DB->get_record('user_info_field', array('shortname' => $f->name));
+$field = $DB->get_record('user_info_field', array('shortname' => $f->shortname));
+$response = array();
+if ($field->datatype == 'multicheckbox') {
+    $response[] = array('checked');
+    $response[] = explode(PHP_EOL, $field->param1);
+    $response[] = $thisfield->param4;
+    $response[] = $thisfield->param5;
+} else {
+    $response[] = explode(PHP_EOL, $field->param1);
+    $response[] = array();
+    $response[] = $thisfield->param4;
+    $response[] = $thisfield->param5;
+}
 echo json_encode($response);
