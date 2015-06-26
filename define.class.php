@@ -31,7 +31,7 @@ class profile_define_branching extends profile_define_base {
     public function define_form_specific($form) {
         global $DB, $PAGE;
         // Param 1 is the type of field.
-        $options = array('text', 'menu', 'qual', 'declaration');
+        $options = array('Text', 'Checklist', 'Secondary branching', 'Declaration');
         $form->addElement('select', 'param1', get_string('fieldtype', 'profilefield_branching'), $options);
         $form->setType('param1', PARAM_TEXT);
 

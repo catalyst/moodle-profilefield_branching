@@ -23,10 +23,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['branchfield'] = 'Field to branch from (shortname)';
-$string['branchvalue'] = 'Desired value of field to branch from';
+$string['branchfield'] = 'Parent question (shortname)';
+$string['branchvalue'] = 'Response to branch from';
 $string['fieldtype'] = 'Type of input';
 $string['invalidentry'] = 'Please provide a value. This field is required based on your selections';
-$string['itemname'] = 'Name of item in list (optional - only relevant to quals)';
+$string['itemname'] = 'Secondary branching options';
 $string['param2'] = 'List of options/ default size';
 $string['pluginname'] = 'Branching field input';
