@@ -259,11 +259,25 @@ class profile_field_branching extends profile_field_base {
                 break;
             case 2:
                 if ($usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
-                    $haystack = $usernew->$property . "\n"; // This is so that we don't match Cert II when searching for Cert I.
-                    if (isset($usernew->{$property}) && strstr($haystack, $this->field->param5 . "\n") !== false) {
-                        $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
-                    } else {
-                        $usernew->{$this->inputname} = '';
+                    if (is_array($usernew->$property)) {
+                        // Get rid of spaces in array keys and do array_keys() as we go
+                        $temp = array();
+                        foreach ($usernew->$property as $key => $value) {
+                            $temp[] = trim($key);
+                        }
+                        if (in_array($this->field->param5, $temp)) {
+                            $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
+                        } else {
+                            $usernew->{$this->inputname} = '';
+                        }
+                    }
+                    else {
+                        $haystack = $usernew->$property . "\n"; // This is so that we don't match Cert II when searching for Cert I.
+                        if (isset($usernew->{$property}) && strstr($haystack, $this->field->param5 . "\n") !== false) {
+                            $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
+                        } else {
+                            $usernew->{$this->inputname} = '';
+                        }
                     }
                 } else {
                     $usernew->{$this->inputname} = '';
