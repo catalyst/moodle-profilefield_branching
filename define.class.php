@@ -30,17 +30,24 @@ class profile_define_branching extends profile_define_base {
      */
     public function define_form_specific($form) {
         global $DB, $PAGE;
+
         // Param 1 is the type of field.
         $options = array('Text', 'Checklist', 'Secondary branching', 'Declaration');
         $form->addElement('select', 'param1', get_string('fieldtype', 'profilefield_branching'), $options);
         $form->setType('param1', PARAM_TEXT);
 
         // Param 2 for menu type contains the options, default size or text dump.
-        $form->addElement('textarea', 'param2', get_string('param2', 'profilefield_branching'), array('rows' => 6, 'cols' => 40));
-        $form->setType('param2', PARAM_TEXT);
+        $form->addElement('editor', 'param2', get_string('param2', 'profilefield_branching'), null, null);
+        $form->setType('param2', PARAM_RAW);
 
         // Param 3 is the field to branch from.
-        $fields = $DB->get_records_sql("SELECT shortname, param1 FROM {user_info_field} WHERE datatype IN ('menu', 'multicheckbox')", array());
+        $fields = $DB->get_records_sql(
+            "SELECT shortname,
+                    param1
+             FROM {user_info_field}
+             WHERE datatype IN ('menu', 'multicheckbox')",
+            array()
+        );
         $options = array();
         foreach ($fields as $field) {
             $options[$field->shortname] = $field->shortname;
@@ -68,7 +75,12 @@ class profile_define_branching extends profile_define_base {
             'fullpath' => '/user/profile/field/branching/branching.js'
         );
 
-        $PAGE->requires->js_init_call('M.profile_field_branching_options.init', array('#fitem_id_param4', '#fitem_id_param3'), false, $jsmod);
+        $PAGE->requires->js_init_call(
+            'M.profile_field_branching_options.init',
+            array('#fitem_id_param4', '#fitem_id_param3'),
+            false,
+            $jsmod
+        );
     }
 
     /**
@@ -83,10 +95,10 @@ class profile_define_branching extends profile_define_base {
 
         if ($data->param1 == 1 || $data->param1 == 2) {
 
-            $data->param2 = str_replace("\r", '', $data->param2);
+            $data->param2 = str_replace("\r", '', $data->param2['text']);
 
             // Check that we have at least 2 options.
-            if (($options = explode("\n", $data->param2)) === false) {
+            if (($options = explode("<br>", $data->param2)) === false) {
                 $err['param2'] = get_string('profilemenunooptions', 'admin');
             } else if (count($options) < 2) {
                 $err['param2'] = get_string('profilemenutoofewoptions', 'admin');
@@ -104,11 +116,20 @@ class profile_define_branching extends profile_define_base {
      * @return array|stdClass
      */
     public function define_save_preprocess($data) {
-        if ($data->param1 == 1 || $data->param1 == 2) {
-            $data->param2 = str_replace("\r", '', $data->param2);
+        if ($data->param1 == 0) {
+            $data->param2 = str_replace("<br>", '', $data->param2['text']);
+        } else {
+            $data->param2 = str_replace("\r", '', $data->param2['text']);
         }
 
         return $data;
     }
 
+    /**
+     * Returns an array of editors used when defining this type of profile field.
+     * @return array
+     */
+    public function define_editors() {
+        return array('param2');
+    }
 }

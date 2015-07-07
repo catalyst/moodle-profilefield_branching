@@ -49,7 +49,7 @@ class profile_field_branching extends profile_field_base {
 
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
-                $options = explode("\n", $this->field->param2);
+                $options = explode("<br>", $this->field->param2);
             } else {
                 $options = array();
             }
@@ -82,23 +82,45 @@ class profile_field_branching extends profile_field_base {
     public function edit_field_add($mform) {
         global $PAGE;
 
-        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
-            $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options);
-        } else if ($this->field->param1 == 0) {
-            $size = $this->field->param2;
-            // Create the form field.
-            $mform->addElement('text', $this->inputname, format_string($this->field->name), ' size="'.$size.'" ');
-            $mform->setType($this->inputname, PARAM_MULTILANG);
-        } else {
-            $text = "<div class=\"id_profile_field_" . $this->field->shortname . "\"><p>";
-            $text .= $this->field->param2;
-            $text .= "</p></div>";
-            $mform->addElement('html', $text);
-            $checkbox = $mform->addElement('advcheckbox', $this->inputname, format_string($this->field->name));
-            if ($this->data == '1') {
-                $checkbox->setChecked(true);
-            }
-            $mform->setType($this->inputname, PARAM_BOOL);
+        switch ($this->field->param1) {
+            case 0:
+                $size = $this->field->param2;
+                // Create the form field.
+                $mform->addElement(
+                    'text',
+                    $this->inputname,
+                    format_string($this->field->name),
+                    ' size="'.$size.'" '
+                );
+                $mform->setType($this->inputname, PARAM_MULTILANG);
+                break;
+            case 1:
+                $mform->addElement(
+                    'select',
+                    $this->inputname,
+                    format_string($this->field->name),
+                    $this->options
+                );
+                break;
+            case 2:
+                $mform->addElement(
+                    'select',
+                    $this->inputname,
+                    format_string($this->field->name),
+                    $this->options
+                );
+                break;
+            case 3:
+                $checkbox = $mform->addElement(
+                    'advcheckbox',
+                    $this->inputname,
+                    format_string($this->field->name),
+                    $this->field->param2
+                );
+                if ($this->data == '1') {
+                    $checkbox->setChecked(true);
+                }
+                $mform->setType($this->inputname, PARAM_BOOL);
         }
 
         $jsmod = array(
@@ -107,9 +129,29 @@ class profile_field_branching extends profile_field_base {
         );
 
         if ($this->field->param1 == 2) { // Qual type.
-            $PAGE->requires->js_init_call('M.profile_field_branching.init', array('#fitem_id_' . $this->inputname, '#id_profile_field_' . $this->field->param3, $this->field->param4, $this->field->param5), false, $jsmod);
+            $PAGE->requires->js_init_call(
+                'M.profile_field_branching.init',
+                array(
+                    '#fitem_id_' . $this->inputname,
+                    '#id_profile_field_' . $this->field->param3,
+                    $this->field->param4,
+                    $this->field->param5
+                ),
+                false,
+                $jsmod
+            );
         } else {
-            $PAGE->requires->js_init_call('M.profile_field_branching.init', array('#fitem_id_' . $this->inputname, '#id_profile_field_' . $this->field->param3, $this->field->param4), false, $jsmod);
+
+            $PAGE->requires->js_init_call(
+                'M.profile_field_branching.init',
+                array(
+                    '#fitem_id_' . $this->inputname,
+                    '#id_profile_field_' . $this->field->param3,
+                    $this->field->param4
+                ),
+                false,
+                $jsmod
+            );
         }
     }
 
