@@ -69,7 +69,9 @@ class profile_field_branching extends profile_field_base {
             if ($this->data !== null) {
                 $this->datakey = (int)array_search($this->data, $this->options);
             }
-        } else if (!empty($this->field) && $this->field->param1 == 3) { // Checkbox declaration.
+        } else if (!empty($this->field)
+            && $this->field->param1 == USERPF_BRANCHING_DECLARATION
+        ) { // Checkbox declaration.
             $datafield = $DB->get_field('user_info_data', 'data', array('userid' => $this->userid, 'fieldid' => $this->fieldid));
             if ($datafield !== false) {
                 $this->data = $datafield;
