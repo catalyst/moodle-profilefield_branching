@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once('locallib.php');
+require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
 
 /**
  * Branching profile field definition.
@@ -100,7 +100,7 @@ class profile_define_branching extends profile_define_base {
             $data->param2 = str_replace("\r", '', $data->param2['text']);
 
             // Check that we have at least 2 options.
-            if (($options = explode("<br>", $data->param2)) === false) {
+            if (($options = explode("<br />", $data->param2)) === false) {
                 $err['param2'] = get_string('profilemenunooptions', 'admin');
             } else if (count($options) < 2) {
                 $err['param2'] = get_string('profilemenutoofewoptions', 'admin');

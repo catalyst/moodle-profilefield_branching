@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once('locallib.php');
+require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
 
 /**
  * Branching profile field.
@@ -54,7 +54,7 @@ class profile_field_branching extends profile_field_base {
 
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
-                $options = explode("<br>", $this->field->param2);
+                $options = explode("<br />", $this->field->param2);
             } else {
                 $options = array();
             }
