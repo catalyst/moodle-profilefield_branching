@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+require_once('locallib.php');
+
 /**
  * Branching profile field definition.
  *
@@ -93,7 +95,7 @@ class profile_define_branching extends profile_define_base {
     public function define_validate_specific($data, $files) {
         $err = array();
 
-        if ($data->param1 == 1 || $data->param1 == 2) {
+        if ($data->param1 == USERPF_BRANCHING_CHECKLIST || $data->param1 == USERPF_BRANCHING_SECONDARY) {
 
             $data->param2 = str_replace("\r", '', $data->param2['text']);
 
@@ -116,7 +118,7 @@ class profile_define_branching extends profile_define_base {
      * @return array|stdClass
      */
     public function define_save_preprocess($data) {
-        if ($data->param1 == 0) {
+        if ($data->param1 == USERPF_BRANCHING_TEXT) {
             $data->param2 = str_replace("<br>", '', $data->param2['text']);
         } else {
             $data->param2 = str_replace("\r", '', $data->param2['text']);

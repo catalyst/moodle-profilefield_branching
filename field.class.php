@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+require_once('locallib.php');
+
 /**
  * Branching profile field.
  *
@@ -45,7 +47,10 @@ class profile_field_branching extends profile_field_base {
         $this->profile_field_base($fieldid, $userid);
 
         // Only need to do this for select types.
-        if (isset($this->field->param1) && ($this->field->param1 == 1 || $this->field->param1 == 2)) {
+        if (isset($this->field->param1)
+            && ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
+                || $this->field->param1 == USERPF_BRANCHING_SECONDARY)
+        ) {
 
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
@@ -83,7 +88,7 @@ class profile_field_branching extends profile_field_base {
         global $PAGE;
 
         switch ($this->field->param1) {
-            case 0:
+            case USERPF_BRANCHING_TEXT:
                 $size = $this->field->param2;
                 // Create the form field.
                 $mform->addElement(
@@ -94,7 +99,7 @@ class profile_field_branching extends profile_field_base {
                 );
                 $mform->setType($this->inputname, PARAM_MULTILANG);
                 break;
-            case 1:
+            case USERPF_BRANCHING_CHECKLIST:
                 $mform->addElement(
                     'select',
                     $this->inputname,
@@ -102,7 +107,7 @@ class profile_field_branching extends profile_field_base {
                     $this->options
                 );
                 break;
-            case 2:
+            case USERPF_BRANCHING_SECONDARY:
                 $mform->addElement(
                     'select',
                     $this->inputname,
@@ -110,7 +115,7 @@ class profile_field_branching extends profile_field_base {
                     $this->options
                 );
                 break;
-            case 3:
+            case USERPF_BRANCHING_DECLARATION:
                 $checkbox = $mform->addElement(
                     'advcheckbox',
                     $this->inputname,
@@ -128,7 +133,7 @@ class profile_field_branching extends profile_field_base {
             'fullpath' => '/user/profile/field/branching/branching.js'
         );
 
-        if ($this->field->param1 == 2) { // Qual type.
+        if ($this->field->param1 == USERPF_BRANCHING_SECONDARY) { // Qual type.
             $PAGE->requires->js_init_call(
                 'M.profile_field_branching.init',
                 array(
@@ -161,7 +166,9 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform Moodle form instance
      */
     public function edit_field_set_default($mform) {
-        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
+            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        ) {
             if (false !== array_search($this->field->defaultdata, $this->options)) {
                 $defaultkey = (int)array_search($this->field->defaultdata, $this->options);
             } else {
@@ -184,7 +191,9 @@ class profile_field_branching extends profile_field_base {
      * @return mixed Data or null
      */
     public function edit_save_data_preprocess($data, $datarecord) {
-        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
+            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        ) {
             return isset($this->options[$data]) ? $this->options[$data] : null;
         } else {
             return $data;
@@ -200,7 +209,9 @@ class profile_field_branching extends profile_field_base {
      * @param stdClass $user User object.
      */
     public function edit_load_user_data($user) {
-        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
+            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        ) {
             $user->{$this->inputname} = $this->datakey;
         } else {
             parent::edit_load_user_data($user);
@@ -212,7 +223,9 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
-        if ($this->field->param1 == 1 || $this->field->param1 == 2) {
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
+            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        ) {
             if (!$mform->elementExists($this->inputname)) {
                 return;
             }
@@ -275,9 +288,9 @@ class profile_field_branching extends profile_field_base {
         $value = $this->field->param4;
         $data = new stdClass();
         switch ($this->field->param1) {
-            case 0:
-            case 1:
-            case 3:
+            case USERPF_BRANCHING_TEXT:
+            case USERPF_BRANCHING_CHECKLIST:
+            case USERPF_BRANCHING_DECLARATION:
                 $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
                 if ($parent->datatype == 'menu') {
                     $list = explode("\n", $parent->param1);
@@ -299,7 +312,7 @@ class profile_field_branching extends profile_field_base {
                     $usernew->{$this->inputname} = '';
                 }
                 break;
-            case 2:
+            case USERPF_BRANCHING_SECONDARY:
                 if ($usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
                     if (is_array($usernew->$property)) {
                         // Get rid of spaces in array keys and do array_keys() as we go
@@ -345,7 +358,7 @@ class profile_field_branching extends profile_field_base {
      * @return string HTML.
      */
     public function display_data() {
-        if ($this->field->param1 == 3) {
+        if ($this->field->param1 == USERPF_BRANCHING_DECLARATION) {
             $options = new stdClass();
             $options->para = false;
             $checked = intval($this->data) === 1 ? 'checked="checked"' : '';
