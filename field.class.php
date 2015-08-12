@@ -310,7 +310,11 @@ class profile_field_branching extends profile_field_base {
                         $options[$i] = $item;
                         $i++;
                     }
-                    $desired = $options[$value];
+                    if (!isset($options[$value] )) {
+                        $desired = '';
+                    } else {
+                        $desired = $options[$value];
+                    }
                 } else {
                     $desired = $value;
                 }
