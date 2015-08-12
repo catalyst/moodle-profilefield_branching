@@ -118,16 +118,23 @@ class profile_field_branching extends profile_field_base {
                 );
                 break;
             case USERPF_BRANCHING_DECLARATION:
-                $checkbox = $mform->addElement(
+
+                $text = $mform->createElement('static', '', '', $this->field->param2);
+
+                $checkbox = $mform->createElement(
                     'advcheckbox',
                     $this->inputname,
-                    format_string($this->field->name),
-                    $this->field->param2
+                    '',
+                    'I accept this declaration'
                 );
                 if ($this->data == '1') {
                     $checkbox->setChecked(true);
                 }
+                $group = array( $text, $checkbox );
+                $mform->addGroup($group, $this->inputname, format_string($this->field->name), '<br>', false);
+
                 $mform->setType($this->inputname, PARAM_BOOL);
+
         }
 
         $jsmod = array(

@@ -32,7 +32,9 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         if (Y.one(parentid)) {
             // Hide the field if we dont have the required value.
             if (Y.one(parentid).get('value') != desired) {
-                Y.one(fieldid).setStyle('display', 'none');
+                var groupid = fieldid.replace('fitem_', 'fgroup_');
+                Y.all(fieldid).setStyle('display', 'none');
+                Y.all(groupid).setStyle('display', 'none');
                 // If there is a text element, hide that to.
                 var fieldclass = fieldid.replace('#fitem_', '.');
                 if (Y.one(fieldclass)) {
@@ -42,15 +44,19 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
 
             Y.one(parentid).on('change', function(e) {
                 if (this.get('value') == desired) {
-                    Y.one(fieldid).setStyle('display', '');
-                    Y.one(fieldid).set('value', "");
+                    var groupid = fieldid.replace('fitem_', 'fgroup_');
+                    Y.all(fieldid).setStyle('display', '');
+                    Y.all(groupid).setStyle('display', '');
+                    Y.all(fieldid).set('value', "");
                     var fieldclass = fieldid.replace('#fitem_', '.');
                     if (Y.one(fieldclass)) {
                         Y.one(fieldclass).setStyle('display', '');
                         Y.one(fieldclass).set('value', "");
                     }
                 } else {
-                    Y.one(fieldid).setStyle('display', 'none');
+                    var groupid = fieldid.replace('fitem_', 'fgroup_');
+                    Y.all(fieldid).setStyle('display', 'none');
+                    Y.all(groupid).setStyle('display', 'none');
                     // If there is a text element, hide that to.
                     var fieldclass = fieldid.replace('#fitem_', '.');
                     if (Y.one(fieldclass)) {
