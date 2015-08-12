@@ -46,8 +46,8 @@ class profile_define_branching extends profile_define_base {
         $fields = $DB->get_records_sql(
             "SELECT shortname,
                     param1
-             FROM {user_info_field}
-             WHERE datatype IN ('menu', 'multicheckbox')",
+               FROM {user_info_field}
+              WHERE datatype IN ('menu', 'multicheckbox')",
             array()
         );
         $options = array();

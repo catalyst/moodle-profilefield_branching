@@ -48,8 +48,8 @@ class profile_field_branching extends profile_field_base {
 
         // Only need to do this for select types.
         if (isset($this->field->param1)
-            && ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
-                || $this->field->param1 == USERPF_BRANCHING_SECONDARY)
+            && ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
+                $this->field->param1 == USERPF_BRANCHING_SECONDARY)
         ) {
 
             // Param 2 for menu type is the options.
@@ -131,10 +131,14 @@ class profile_field_branching extends profile_field_base {
                     $checkbox->setChecked(true);
                 }
                 $group = array( $text, $checkbox );
-                $mform->addGroup($group, $this->inputname, format_string($this->field->name), '<br>', false);
+                $mform->addGroup($group, $this->inputname .'[parent]', format_string($this->field->name), '<br>', false);
 
                 $mform->setType($this->inputname, PARAM_BOOL);
 
+        }
+
+        if (!empty($this->field->param3) && !empty($this->field->param4) ) {
+            $mform->disabledIf($this->inputname, 'profile_field_' . $this->field->param3, 'neq', trim($this->field->param4));
         }
 
         $jsmod = array(
@@ -175,8 +179,8 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform Moodle form instance
      */
     public function edit_field_set_default($mform) {
-        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
-            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
+            $this->field->param1 == USERPF_BRANCHING_SECONDARY
         ) {
             if (false !== array_search($this->field->defaultdata, $this->options)) {
                 $defaultkey = (int)array_search($this->field->defaultdata, $this->options);
@@ -200,8 +204,8 @@ class profile_field_branching extends profile_field_base {
      * @return mixed Data or null
      */
     public function edit_save_data_preprocess($data, $datarecord) {
-        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
-            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
+            $this->field->param1 == USERPF_BRANCHING_SECONDARY
         ) {
             return isset($this->options[$data]) ? $this->options[$data] : null;
         } else {
@@ -218,8 +222,8 @@ class profile_field_branching extends profile_field_base {
      * @param stdClass $user User object.
      */
     public function edit_load_user_data($user) {
-        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
-            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
+            $this->field->param1 == USERPF_BRANCHING_SECONDARY
         ) {
             $user->{$this->inputname} = $this->datakey;
         } else {
@@ -232,8 +236,8 @@ class profile_field_branching extends profile_field_base {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
-        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST
-            || $this->field->param1 == USERPF_BRANCHING_SECONDARY
+        if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
+            $this->field->param1 == USERPF_BRANCHING_SECONDARY
         ) {
             if (!$mform->elementExists($this->inputname)) {
                 return;
