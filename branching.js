@@ -97,7 +97,7 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
                 Y.one(fieldid).one('> .fselect').one('#id_param4').get('childNodes').remove();
 
                 var i = 1;
-                for (item of response[0]) {
+                for (item in response[0]) {
                     if (item == 'checked') {
                         Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + item.trim() + '">' + item + '</option>');
                     } else {
@@ -110,7 +110,7 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
                 // This is only for the multicheckbox qualification type.
                 // Remove all existing items.
                 Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').get('childNodes').remove();
-                for (item of response[1]) {
+                for (item in response[1]) {
                         Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').append('<option value="' + item.trim() + '">' + item + '</option>');
                 }
                 // Set the default if its there.
