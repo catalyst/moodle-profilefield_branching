@@ -130,6 +130,7 @@ class profile_field_branching extends profile_field_base {
                 if ($this->data == '1') {
                     $checkbox->setChecked(true);
                 }
+
                 $group = array( $text, $checkbox );
                 $mform->addGroup($group, $this->inputname .'[parent]', format_string($this->field->name), '<br>', false);
 
@@ -384,4 +385,23 @@ class profile_field_branching extends profile_field_base {
             return parent::display_data();
         }
     }
+
+    /**
+     * Sets the required flag for the field in the form object
+     *
+     * @param moodleform $mform instance of the moodleform class
+     */
+    public function edit_field_set_required($mform) {
+        global $USER;
+        if ($this->is_required() && ($this->userid == $USER->id || isguestuser())) {
+            if ($this->field->param1 == USERPF_BRANCHING_DECLARATION) {
+
+                // This is required but due to funky advchecbox inside group is set as required elsewhere
+                $mform->addRule($this->inputname.'[parent]', get_string('required'), 'required', null, 'server');
+            } else {
+                $mform->addRule($this->inputname, get_string('required'), 'required', null, 'client');
+            }
+        }
+    }
+
 }
