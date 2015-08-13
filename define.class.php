@@ -44,15 +44,22 @@ class profile_define_branching extends profile_define_base {
 
         // Param 3 is the field to branch from.
         $fields = $DB->get_records_sql(
-            "SELECT shortname,
-                    param1
-               FROM {user_info_field}
-              WHERE datatype IN ('menu', 'multicheckbox')",
+            "SELECT f.shortname,
+                    f.name,
+                    f.categoryid,
+                    c.name category,
+                    f.param1
+               FROM {user_info_field} f
+               JOIN {user_info_category} c ON c.id = f.categoryid
+              WHERE f.datatype IN ('menu', 'multicheckbox')
+           ORDER BY c.sortorder,
+                    f.sortorder
+            ",
             array()
         );
         $options = array();
         foreach ($fields as $field) {
-            $options[$field->shortname] = $field->shortname;
+            $options[$field->shortname] = "$field->name ($field->shortname)";
         }
         $form->addElement('select', 'param3', get_string('branchfield', 'profilefield_branching'), $options);
         $form->setType('param3', PARAM_TEXT);
