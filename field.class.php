@@ -46,6 +46,8 @@ class profile_field_branching extends profile_field_base {
         // First call parent constructor.
         $this->profile_field_base($fieldid, $userid);
 
+e($this);
+
         // Only need to do this for select types.
         if (isset($this->field->param1)
             && ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
@@ -54,7 +56,9 @@ class profile_field_branching extends profile_field_base {
 
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
-                $options = explode("<br />", $this->field->param2);
+                $options = $this->field->param2;
+                $options = str_replace('<br \>', '<br>', $options);
+                $options = explode("<br>", $options);
             } else {
                 $options = array();
             }
