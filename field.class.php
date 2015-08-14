@@ -55,7 +55,7 @@ class profile_field_branching extends profile_field_base {
             // Param 2 for menu type is the options.
             if (isset($this->field->param2)) {
                 $options = $this->field->param2;
-                $options = str_replace('<br \>', '<br>', $options);
+                $options = str_replace('<br />', '<br>', $options);
                 $options = explode("<br>", $options);
             } else {
                 $options = array();

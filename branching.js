@@ -2,6 +2,8 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemname) {
 
+return;
+
     // Have to pass them in here, otherwise if there are multiple on the page it only works for the last one.
     this.checkQual = function(fieldid, parentid, itemname) {
         itemname = itemname.replace(/\s/g, '');
