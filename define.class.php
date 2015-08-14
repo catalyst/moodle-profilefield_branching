@@ -90,7 +90,7 @@ class profile_define_branching extends profile_define_base {
 
         $PAGE->requires->js_init_call(
             'M.profile_field_branching_options.init',
-            array('#fitem_id_param4', '#fitem_id_param3'),
+            array('#fitem_id_param4', '#fitem_id_param3', '#fitem_id_param5'),
             false,
             $jsmod
         );

@@ -2,8 +2,6 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemname) {
 
-return;
-
     // Have to pass them in here, otherwise if there are multiple on the page it only works for the last one.
     this.checkQual = function(fieldid, parentid, itemname) {
         itemname = itemname.replace(/\s/g, '');
@@ -86,7 +84,11 @@ return;
 
 M.profile_field_branching_options = {};
 
-M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
+M.profile_field_branching_options.init = function(Y, fieldid, parentid, defaultid) {
+
+    var fid = fieldid.replace('fitem_','');
+    var pid = parentid.replace('fitem_','');
+    var did = defaultid.replace('fitem_','');
 
     function populate(shortname, fieldid, parentid) {
         var name =  Y.one('#id_shortname').get('value');
@@ -96,27 +98,30 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
                 var response = JSON.parse(xhr.responseText);
 
                 // Remove all existing items.
-                Y.one(fieldid).one('> .fselect').one('#id_param4').get('childNodes').remove();
+                Y.one(fieldid).one('> .fselect').one(fid).get('childNodes').remove();
 
                 var i = 1;
                 for (item in response[0]) {
-                    if (item == 'checked') {
-                        Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + item.trim() + '">' + item + '</option>');
+                    var val = response[0][item];
+                    if (val == 'checked') {
+                        Y.one(fieldid).one('> .fselect').one(fid).append('<option value="' + item.trim() + '">' + val + '</option>');
                     } else {
-                        Y.one(fieldid).one('> .fselect').one('#id_param4').append('<option value="' + i + '">' + item + '</option>');
+                        Y.one(fieldid).one('> .fselect').one(fid).append('<option value="' + i + '">' + val + '</option>');
                     }
                     i++;
                 }
                 // Set the default if its there.
-                Y.one(fieldid).one('> .fselect').one('#id_param4').set('value', response[2]);
+                Y.one(fieldid).one('> .fselect').one(fid).set('value', response[2]);
                 // This is only for the multicheckbox qualification type.
                 // Remove all existing items.
-                Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').get('childNodes').remove();
-                for (item in response[1]) {
-                        Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').append('<option value="' + item.trim() + '">' + item + '</option>');
+                if (Y.one(defaultid).one('> .fselect') ){
+                    Y.one(defaultid).one('> .fselect').one(did).get('childNodes').remove();
+                    for (item in response[1]) {
+                            Y.one(defaultid).one('> .fselect').one(did).append('<option value="' + item.trim() + '">' + item + '</option>');
+                    }
+                    // Set the default if its there.
+                    Y.one(defaultid).one('> .fselect').one(did).set('value', response[3]);
                 }
-                // Set the default if its there.
-                Y.one('#fitem_id_param5').one('> .fselect').one('#id_param5').set('value', response[3]);
             }
         };
         var field = {
@@ -129,11 +134,11 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid) {
     }
 
     // Run at page load.
-    populate(Y.one(parentid).one('> .fselect').one('#id_param3').get('value'), fieldid, parentid);
+    populate(Y.one(parentid).one('> .fselect').one(pid).get('value'), fieldid, parentid);
 
     // Run on change.
     Y.one(parentid).on('change', function(e) {
-        var shortname = this.one('> .fselect').one('#id_param3').get('value');
+        var shortname = this.one('> .fselect').one(pid).get('value');
         populate(shortname, fieldid, parentid);
     });
 };
