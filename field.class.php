@@ -395,7 +395,7 @@ class profile_field_branching extends profile_field_base {
      */
     public function edit_field_set_required($mform) {
         global $USER;
-        if ($this->is_required() && ($this->userid == $USER->id || isguestuser())) {
+        if ($this->is_required() && ($this->userid == $USER->id || isguestuser()) && !is_siteadmin($USER)  ) {
             if ($this->field->param1 == USERPF_BRANCHING_DECLARATION) {
 
                 // This is required but due to funky advchecbox inside group is set as required elsewhere
