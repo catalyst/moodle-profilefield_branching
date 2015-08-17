@@ -2,42 +2,6 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemname) {
 
-    // Have to pass them in here, otherwise if there are multiple on the page it only works for the last one.
-    this.checkQual = function(fieldid, parentid, itemname) {
-        itemname = itemname.replace(/\s/g, '');
-        parentname = parentid + "_" + itemname;
-
-        function hide(fieldid) {
-            Y.one(fieldid).setStyle('display', 'none');
-            Y.one(fieldid).set('value', "@");
-        }
-        function show(fieldid) {
-            Y.one(fieldid).setStyle('display', '');
-            Y.one(fieldid).set('value', "");
-        }
-
-
-        if (Y.one(parentname)) {
-            // Hide the field if we dont have the required value.
-            if (Y.one(parentname).get('checked') != true) {
-                hide(fieldid);
-            } else {
-                // We need this since we now have 2 possible change events.
-                show(fieldid);
-            }
-
-            Y.one(parentname).on('change', function(e) {
-                // The double check on state is not ideal, but it is required to fix a weird corner case
-                // bug where if it is already checked and changed from Vic to something else it updates.
-                if (this.get('checked') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
-                    show(fieldid);
-                } else {
-                    hide(fieldid);
-                }
-            });
-        }
-    };
-
     function hide(fieldid) {
         Y.all(fieldid + ' input').set('value', '@');
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
@@ -83,19 +47,30 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
             });
         }
     } else { // Qual.
-        if (Y.one('#id_profile_field_vettrakrstate') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
-            M.profile_field_branching.checkQual(fieldid, parentid, itemname);
-        } else { // It's not the required state, so do nothing.
-            Y.one(fieldid).setStyle('display', 'none');
+
+        var groupid = parentid.replace('#', '#fgroup_')+'_grp';
+
+        var checkbox = Y.one(Y.all(parentid.replace('#', '#fgroup_')+'_grp input[value]')._nodes[itemname]);
+
+        // IF the vettrak state is 2:Vic AND our tickbox is selected then show, otherwise hide
+        function check(){
+            var isVic = Y.one('#id_profile_field_vettrakrstate') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2;
+            if (isVic && checkbox.get('checked')) {
+                show(fieldid);
+            } else {
+                hide(fieldid);
+            }
+
         }
 
-        Y.all('#id_profile_field_vettrakrstate').on('change', function(e) {
-            if (this.get('value') == 2) {
-                M.profile_field_branching.checkQual(fieldid, parentid, itemname);
-            } else { // It's not the required state, so do nothing.
-                Y.one(fieldid).setStyle('display', 'none');
-            }
-        });
+
+        if (Y.one('#id_profile_field_vettrakrstate')) {
+            Y.one('#id_profile_field_vettrakrstate').on('change', check );
+        }
+        if (checkbox) {
+            checkbox.on('change', check);
+        }
+        check();
     }
 };
 
