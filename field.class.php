@@ -333,7 +333,7 @@ class profile_field_branching extends profile_field_base {
                 }
                 break;
             case USERPF_BRANCHING_SECONDARY:
-                if ($usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
+                if (isset($usernew->profile_field_vettrakrstate) && $usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
                     if (is_array($usernew->$property)) {
                         // Get rid of spaces in array keys and do array_keys() as we go
                         $temp = array();
