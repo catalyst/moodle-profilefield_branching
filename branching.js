@@ -83,13 +83,13 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
             });
         }
     } else { // Qual.
-        if (Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
+        if (Y.one('#id_profile_field_vettrakrstate') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
             M.profile_field_branching.checkQual(fieldid, parentid, itemname);
         } else { // It's not the required state, so do nothing.
             Y.one(fieldid).setStyle('display', 'none');
         }
 
-        Y.one('#id_profile_field_vettrakrstate').on('change', function(e) {
+        Y.all('#id_profile_field_vettrakrstate').on('change', function(e) {
             if (this.get('value') == 2) {
                 M.profile_field_branching.checkQual(fieldid, parentid, itemname);
             } else { // It's not the required state, so do nothing.
@@ -134,7 +134,8 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid, defaulti
                 if (Y.one(defaultid).one('> .fselect') ){
                     Y.one(defaultid).one('> .fselect').one(did).get('childNodes').remove();
                     for (item in response[1]) {
-                            Y.one(defaultid).one('> .fselect').one(did).append('<option value="' + item.trim() + '">' + item + '</option>');
+                        var val = response[1][item];
+                            Y.one(defaultid).one('> .fselect').one(did).append('<option value="' + item.trim() + '">' + val + '</option>');
                     }
                     // Set the default if its there.
                     Y.one(defaultid).one('> .fselect').one(did).set('value', response[3]);
