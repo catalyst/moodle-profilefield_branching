@@ -140,9 +140,9 @@ class profile_field_branching extends profile_field_base {
 
         }
 
-        if (!empty($this->field->param3) && !empty($this->field->param4) ) {
-            $mform->disabledIf($this->inputname, 'profile_field_' . $this->field->param3, 'neq', trim($this->field->param4));
-        }
+        // if (!empty($this->field->param3) && !empty($this->field->param4) ) {
+            // $mform->disabledIf($this->inputname, 'profile_field_' . $this->field->param3, 'neq', trim($this->field->param4));
+        // }
 
         $jsmod = array(
             'name' => 'profile_field_branching',

@@ -6,62 +6,70 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
     this.checkQual = function(fieldid, parentid, itemname) {
         itemname = itemname.replace(/\s/g, '');
         parentname = parentid + "_" + itemname;
+
+        function hide(fieldid) {
+            Y.one(fieldid).setStyle('display', 'none');
+            Y.one(fieldid).set('value', "@");
+        }
+        function show(fieldid) {
+            Y.one(fieldid).setStyle('display', '');
+            Y.one(fieldid).set('value', "");
+        }
+
+
         if (Y.one(parentname)) {
             // Hide the field if we dont have the required value.
             if (Y.one(parentname).get('checked') != true) {
-                Y.one(fieldid).setStyle('display', 'none');
+                hide(fieldid);
             } else {
                 // We need this since we now have 2 possible change events.
-                Y.one(fieldid).setStyle('display', '');
+                show(fieldid);
             }
 
             Y.one(parentname).on('change', function(e) {
                 // The double check on state is not ideal, but it is required to fix a weird corner case
                 // bug where if it is already checked and changed from Vic to something else it updates.
                 if (this.get('checked') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2) {
-                    Y.one(fieldid).setStyle('display', '');
-                    Y.one(fieldid).set('value', "");
+                    show(fieldid);
                 } else {
-                    Y.one(fieldid).setStyle('display', 'none');
+                    hide(fieldid);
                 }
             });
         }
     };
 
+    function hide(fieldid) {
+        Y.all(fieldid + ' input').set('value', '@');
+        var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
+        Y.all(fieldid).setStyle('display', 'none');
+        Y.all(groupid).setStyle('display', 'none');
+        // If there is a text element, hide that to.
+        var fieldclass = fieldid.replace('#fitem_', '.');
+        Y.all(fieldclass).setStyle('display', 'none');
+    }
+    function show(fieldid) {
+        var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
+        Y.all(fieldid).setStyle('display', '');
+        Y.all(groupid).setStyle('display', '');
+        Y.all(fieldid + ' input').set('value', '');
+        Y.all(fieldid).set('placeholder', "empty");
+        var fieldclass = fieldid.replace('#fitem_', '.');
+        Y.all(fieldclass).setStyle('display', '');
+        Y.all(fieldclass).set('value', '');
+    }
+
     if (typeof itemname === 'undefined') { // Text, menu or declaration.
         if (Y.one(parentid)) {
             // Hide the field if we dont have the required value.
             if (Y.one(parentid).get('value') != desired) {
-                var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
-                Y.all(fieldid).setStyle('display', 'none');
-                Y.all(groupid).setStyle('display', 'none');
-                // If there is a text element, hide that to.
-                var fieldclass = fieldid.replace('#fitem_', '.');
-                if (Y.one(fieldclass)) {
-                    Y.one(fieldclass).setStyle('display', 'none');
-                }
+                hide(fieldid);
             }
 
             Y.one(parentid).on('change', function(e) {
                 if (this.get('value') == desired) {
-                    var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
-                    Y.all(fieldid).setStyle('display', '');
-                    Y.all(groupid).setStyle('display', '');
-                    Y.all(fieldid).set('value', "");
-                    var fieldclass = fieldid.replace('#fitem_', '.');
-                    if (Y.one(fieldclass)) {
-                        Y.one(fieldclass).setStyle('display', '');
-                        Y.one(fieldclass).set('value', "");
-                    }
+                    show(fieldid);
                 } else {
-                    var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
-                    Y.all(fieldid).setStyle('display', 'none');
-                    Y.all(groupid).setStyle('display', 'none');
-                    // If there is a text element, hide that to.
-                    var fieldclass = fieldid.replace('#fitem_', '.');
-                    if (Y.one(fieldclass)) {
-                        Y.one(fieldclass).setStyle('display', 'none');
-                    }
+                    hide(fieldid);
                 }
             });
         }

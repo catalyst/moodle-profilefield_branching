@@ -106,7 +106,8 @@ class profile_define_branching extends profile_define_base {
     public function define_validate_specific($data, $files) {
         $err = array();
 
-        if ($data->param1 == USERPF_BRANCHING_CHECKLIST || $data->param1 == USERPF_BRANCHING_SECONDARY) {
+        if ($data->param1 == USERPF_BRANCHING_CHECKLIST ||
+            $data->param1 == USERPF_BRANCHING_SECONDARY) {
 
             // Editors are stupid and inconsistant, so change everything to be the same.
             $data->param2['text'] = str_replace("\r", '', $data->param2['text']);
