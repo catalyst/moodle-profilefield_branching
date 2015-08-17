@@ -41,10 +41,15 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
     function hide(fieldid) {
         Y.all(fieldid + ' input').set('value', '@');
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
+        var fieldclass = fieldid.replace('#fitem_', '.');
+
+        if (Y.one(fieldid + ' select')) {
+            Y.one(fieldid + ' select').prepend('<option value="@">@</option>');
+            Y.one(fieldid + ' select').set("selectedIndex", 0);
+        }
+
         Y.all(fieldid).setStyle('display', 'none');
         Y.all(groupid).setStyle('display', 'none');
-        // If there is a text element, hide that to.
-        var fieldclass = fieldid.replace('#fitem_', '.');
         Y.all(fieldclass).setStyle('display', 'none');
     }
     function show(fieldid) {
@@ -56,6 +61,10 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         var fieldclass = fieldid.replace('#fitem_', '.');
         Y.all(fieldclass).setStyle('display', '');
         Y.all(fieldclass).set('value', '');
+
+        if (Y.one(fieldid + ' select')) {
+            Y.all(fieldid + ' option[value=@]').remove();
+        }
     }
 
     if (typeof itemname === 'undefined') { // Text, menu or declaration.
