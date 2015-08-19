@@ -10,6 +10,9 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         if (Y.one(fieldid + ' select')) {
             Y.one(fieldid + ' select').prepend('<option value="@">@</option>');
             Y.one(fieldid + ' select').set("selectedIndex", 0);
+            YUI().use('node-event-simulate', function(Y) {
+                Y.one(fieldid + ' select').simulate("change");
+            });
         }
 
         Y.all(fieldid).setStyle('display', 'none');
@@ -28,6 +31,9 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
 
         if (Y.one(fieldid + ' select')) {
             Y.all(fieldid + ' option[value=@]').remove();
+            YUI().use('node-event-simulate', function(Y) {
+                Y.one(fieldid + ' select').simulate("change");
+            });
         }
     }
 

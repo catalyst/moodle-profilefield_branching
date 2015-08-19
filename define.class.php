@@ -51,7 +51,7 @@ class profile_define_branching extends profile_define_base {
                     f.param1
                FROM {user_info_field} f
                JOIN {user_info_category} c ON c.id = f.categoryid
-              WHERE f.datatype IN ('menu', 'multicheckbox')
+              WHERE f.datatype IN ('menu', 'multicheckbox', 'branching')
            ORDER BY c.sortorder,
                     f.sortorder
             ",

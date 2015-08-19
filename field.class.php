@@ -305,6 +305,8 @@ class profile_field_branching extends profile_field_base {
         $data = new stdClass();
         switch ($this->field->param1) {
             case USERPF_BRANCHING_TEXT:
+                // Don't mess with it, just save as is.
+                break;
             case USERPF_BRANCHING_CHECKLIST:
             case USERPF_BRANCHING_DECLARATION:
                 $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
