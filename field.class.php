@@ -275,13 +275,13 @@ class profile_field_branching extends profile_field_base {
     }
 
     function edit_validate_field($usernew) {
-        global $DB;
+        global $DB, $USER;
 
         $errors = array();
         $property = "profile_field_" . $this->field->param3;
         $value = $this->field->param4;
 
-        if (isset($usernew->{$property}) && $usernew->$property == $value) {
+        if (!is_siteadmin($USER) && isset($usernew->{$property}) && $usernew->$property == $value) {
             // The firts item in the select menus has the value of '0'. This needs to be valid.
             if (empty($usernew->{$this->inputname}) && $usernew->{$this->inputname} !== '0') {
                 $errors[$this->inputname] = get_string('invalidentry', 'profilefield_branching');
