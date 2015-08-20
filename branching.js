@@ -58,7 +58,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         // Test for matrix checkboxes
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
-            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').one('input[name=profile_field_'+parentid+'::'+desired+']').get('checked') == 1;
+            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').one("input[data-name='" + desired + "']").get('checked');
         }
 
         return false;
