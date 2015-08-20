@@ -149,31 +149,32 @@ class profile_field_branching extends profile_field_base {
             'fullpath' => '/user/profile/field/branching/branching.js'
         );
 
-        if ($this->field->param1 == USERPF_BRANCHING_SECONDARY) { // Qual type.
-            $PAGE->requires->js_init_call(
-                'M.profile_field_branching.init',
-                array(
-                    '#fitem_id_' . $this->inputname,
-                    '#id_profile_field_' . $this->field->param3,
-                    $this->field->param4,
-                    $this->field->param5
-                ),
-                false,
-                $jsmod
-            );
-        } else {
+        $PAGE->requires->js_init_call(
+            'M.profile_field_branching.init',
+            array(
+                '#fitem_id_' . $this->inputname,
+                $this->field->param3,
+                $this->field->param4,
+                $this->field->param5,
+                $this->field->param6
+            ),
+            false,
+            $jsmod
+        );
+    }
 
-            $PAGE->requires->js_init_call(
-                'M.profile_field_branching.init',
-                array(
-                    '#fitem_id_' . $this->inputname,
-                    '#id_profile_field_' . $this->field->param3,
-                    $this->field->param4
-                ),
-                false,
-                $jsmod
-            );
+    public function split_param5() {
+        if (!isset($this->field->param6) && isset($this->field->param5)) {
+            $json = json_decode($this->field->param5);
+            $this->field->param5 = isset($json->param5) ? $json->param5 : '';
+            $this->field->param6 = isset($json->param6) ? $json->param6 : '';
         }
+    }
+
+    public function load_data() {
+
+        parent::load_data();
+        $this->split_param5();
     }
 
     /**
@@ -303,6 +304,7 @@ class profile_field_branching extends profile_field_base {
         $property = "profile_field_" . $this->field->param3;
         $value = $this->field->param4;
         $data = new stdClass();
+
         switch ($this->field->param1) {
             case USERPF_BRANCHING_TEXT:
                 // Don't mess with it, just save as is.
@@ -335,7 +337,9 @@ class profile_field_branching extends profile_field_base {
                 }
                 break;
             case USERPF_BRANCHING_SECONDARY:
-                if (isset($usernew->profile_field_vettrakrstate) && $usernew->profile_field_vettrakrstate == 'Vic') { // Victoria.
+                    $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
+/*
+WTF is all this crap?
                     if (is_array($usernew->$property)) {
                         // Get rid of spaces in array keys and do array_keys() as we go
                         $temp = array();
@@ -356,9 +360,7 @@ class profile_field_branching extends profile_field_base {
                             $usernew->{$this->inputname} = '';
                         }
                     }
-                } else {
-                    $usernew->{$this->inputname} = '';
-                }
+*/
                 break;
         }
         // Do the standard stuff, but without the param assign.

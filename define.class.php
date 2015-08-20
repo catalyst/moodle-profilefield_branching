@@ -51,17 +51,18 @@ class profile_define_branching extends profile_define_base {
                     f.param1
                FROM {user_info_field} f
                JOIN {user_info_category} c ON c.id = f.categoryid
-              WHERE f.datatype IN ('menu', 'multicheckbox', 'branching')
+              WHERE f.datatype IN ('menu', 'multicheckbox')
+                 OR (f.datatype = 'branching' AND f.param1 = ?)
            ORDER BY c.sortorder,
                     f.sortorder
             ",
-            array()
+            array(USERPF_BRANCHING_CHECKLIST)
         );
-        $options = array();
+        $parents = array();
         foreach ($fields as $field) {
-            $options[$field->shortname] = "$field->name ($field->shortname)";
+            $parents[$field->shortname] = "$field->name ($field->shortname)";
         }
-        $form->addElement('select', 'param3', get_string('branchfield', 'profilefield_branching'), $options);
+        $form->addElement('select', 'param3', get_string('branchfield', 'profilefield_branching'), $parents);
         $form->setType('param3', PARAM_TEXT);
 
         // Param 4 is the value to show field on.
@@ -73,10 +74,15 @@ class profile_define_branching extends profile_define_base {
         $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
 
-        // Param 5 is the item in the field list.
-        $options = $array;
-        $form->addElement('select', 'param5', get_string('itemname', 'profilefield_branching'), $options);
+
+        // Param 5 is the second optional parent
+        array_unshift($parents, 'Choose...');
+        $form->addElement('select', 'param5', get_string('branchfield2', 'profilefield_branching'), $parents);
         $form->setType('param5', PARAM_TEXT);
+
+        // Param 6 is the second optional value
+        $form->addElement('select', 'param6', get_string('branchvalue2', 'profilefield_branching'), $options);
+        $form->setType('param6', PARAM_TEXT);
 
         // Default data.
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
@@ -90,7 +96,13 @@ class profile_define_branching extends profile_define_base {
 
         $PAGE->requires->js_init_call(
             'M.profile_field_branching_options.init',
-            array('#fitem_id_param4', '#fitem_id_param3', '#fitem_id_param5'),
+            array('#fitem_id_param3', '#fitem_id_param4', false),
+            false,
+            $jsmod
+        );
+        $PAGE->requires->js_init_call(
+            'M.profile_field_branching_options.init',
+            array('#fitem_id_param5', '#fitem_id_param6', true),
             false,
             $jsmod
         );
@@ -140,6 +152,14 @@ class profile_define_branching extends profile_define_base {
             $data->param2 = str_replace("\r", '', $data->param2['text']);
         }
 
+        // Because we have run out of columns we merge param5 and param6
+        // into a single json value for storage.
+        $json = array();
+        $json['param5'] = $data->param5;
+        $json['param6'] = $data->param6;
+        $data->param5 = json_encode($json);
+        unset($data->param6);
+
         return $data;
     }
 
@@ -149,5 +169,28 @@ class profile_define_branching extends profile_define_base {
      */
     public function define_editors() {
         return array('param2');
+    }
+
+    /**
+     * Get the param5 json and split into param5 and param6.
+     */
+    public function define_after_data(&$mform) {
+
+        global $DB;
+
+        $id = required_param('id', PARAM_INT);
+        if ($id === 0) {
+            return;
+        }
+
+        $json = $DB->get_field('user_info_field', 'param5', array('id' => $id), MUST_EXIST);
+        $values = json_decode($json);
+
+        if (is_object($values)) {
+            foreach ($values as $key => $value) {
+                $mform->setDefault($key, $value);
+            }
+        }
+
     }
 }

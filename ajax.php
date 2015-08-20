@@ -31,35 +31,33 @@ echo $OUTPUT->header();
 @header('Content-type: application/json; charset=utf-8');
 
 $f = json_decode(file_get_contents('php://input'));
-$thisfield = $DB->get_record('user_info_field', array('shortname' => $f->name));
-$field = $DB->get_record('user_info_field', array('shortname' => $f->shortname));
+$parent = $DB->get_record('user_info_field', array('shortname' => $f->parentname));
 $response = array();
-switch ($field->datatype) {
+
+// This ajax returns an array of options and thats it.
+
+if (!$parent){
+    echo json_encode(array());
+    exit;
+}
+
+switch ($parent->datatype) {
     case 'multicheckbox':
-        $response[] = array('checked');
-        $response[] = explode(PHP_EOL, $field->param1);
-        $response[] = $thisfield->param4;
-        $response[] = $thisfield->param5;
+        $response[] = explode(PHP_EOL, $parent->param1);
         break;
 
     case 'menu':
-        $response[] = explode(PHP_EOL, $field->param1);
-        $response[] = array();
-        $response[] = $thisfield->param4;
-        $response[] = $thisfield->param5;
+        $response[] = explode(PHP_EOL, $parent->param1);
         break;
 
     case 'branching':
-        switch ($field->param1) {
+        switch ($parent->param1) {
             case USERPF_BRANCHING_CHECKLIST:
-                $options = $field->param2;
+                $options = $parent->param2;
                 $options = str_replace('<br />', '<br>', $options);
                 $options = explode("<br>", $options);
 
                 $response[] = $options;
-                $response[] = array();
-                $response[] = $thisfield->param4;
-                $response[] = $thisfield->param5;
                 break 2;
             case USERPF_BRANCHING_SECONDARY:
             case USERPF_BRANCHING_DECLARATION:
@@ -68,7 +66,7 @@ switch ($field->datatype) {
         }
 
     default:
-        $response[] = 'ERROR unknown type: '.$field->datatype;
+        $response[] = array();
 
 }
 

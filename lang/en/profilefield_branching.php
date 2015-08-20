@@ -23,8 +23,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['branchfield'] = 'Parent question (shortname)';
+$string['branchfield'] = 'Parent question';
 $string['branchvalue'] = 'Response to branch from';
+$string['branchfield2'] = 'Second parent question';
+$string['branchvalue2'] = 'Second response to branch from';
 $string['fieldtype'] = 'Type of input';
 $string['invalidentry'] = 'Please provide a value. This field is required based on your selections';
 $string['itemname'] = 'Secondary branching options';

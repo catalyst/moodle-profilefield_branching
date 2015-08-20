@@ -1,7 +1,8 @@
 M.profile_field_branching = {};
 
-M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemname) {
+M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, parent2id, desired2) {
 
+    // Hides a dependant field and sets all it's data to @
     function hide(fieldid) {
         Y.all(fieldid + ' input').set('value', '@');
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
@@ -19,6 +20,8 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         Y.all(groupid).setStyle('display', 'none');
         Y.all(fieldclass).setStyle('display', 'none');
     }
+
+    // Hides a dependant field and sets all it's data to empty
     function show(fieldid) {
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
         Y.all(fieldid).setStyle('display', '');
@@ -37,95 +40,103 @@ M.profile_field_branching.init = function(Y, fieldid, parentid, desired, itemnam
         }
     }
 
-    if (typeof itemname === 'undefined') { // Text, menu or declaration.
-        if (Y.one(parentid)) {
-            // Hide the field if we dont have the required value.
-            if (Y.one(parentid).get('value') != desired) {
-                hide(fieldid);
-            }
+    /*
+     * Detects wether a field contains the desired value
+     * and handles te various types of parent fields.
+     */
+    function isDesired(parentid, desired) {
 
-            Y.one(parentid).on('change', function(e) {
-                if (this.get('value') == desired) {
-                    show(fieldid);
-                } else {
-                    hide(fieldid);
-                }
-            });
-        }
-    } else { // Qual.
-
-        var groupid = parentid.replace('#', '#fgroup_')+'_grp';
-
-        var checkbox = Y.one(Y.all(parentid.replace('#', '#fgroup_')+'_grp input[value]')._nodes[itemname]);
-
-        // IF the vettrak state is 2:Vic AND our tickbox is selected then show, otherwise hide
-        function check(){
-            var isVic = Y.one('#id_profile_field_vettrakrstate') && Y.one('#id_profile_field_vettrakrstate').get('value') == 2;
-            if (isVic && checkbox.get('checked')) {
-                show(fieldid);
-            } else {
-                hide(fieldid);
-            }
-
+        // Test for selects
+        var select = Y.one('[name=profile_field_'+parentid+']');
+        if (select){
+            return select.get('value') == desired;
         }
 
+        // Test for matrix checkboxes
+        var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
+        if (checkgroup){
+            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input')._nodes[1*desired].checked;
+        }
 
-        if (Y.one('#id_profile_field_vettrakrstate')) {
-            Y.one('#id_profile_field_vettrakrstate').on('change', check );
-        }
-        if (checkbox) {
-            checkbox.on('change', check);
-        }
-        check();
+        return false;
     }
+
+    /*
+     * Determine if this fields dependancies are met, and if so hide or show.
+     */
+    function check(){
+
+        if (isDesired(parent1id, desired1) && (!parent2id || isDesired(parent2id, desired2) ) ) {
+            show(fieldid);
+        } else {
+            hide(fieldid);
+        }
+    }
+
+    /*
+     * detect the field type and add appropriate handlers
+     */
+    function setupOnChange(parentid){
+        var select = Y.one('[name=profile_field_'+parentid+']');
+        if (select){
+            select.on('change', check);
+        }
+
+        var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
+        if (checkgroup){
+            Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input').on('change', check);
+        }
+
+    }
+
+    setupOnChange(parent1id);
+
+    if (parent2id) {
+        setupOnChange(parent2id);
+    }
+
+    // Check onload. Setup last as may trigger recursive change events
+    check();
+
 };
 
 M.profile_field_branching_options = {};
 
-M.profile_field_branching_options.init = function(Y, fieldid, parentid, defaultid) {
+M.profile_field_branching_options.init = function(Y, parentid, fieldid, isoptional) {
 
-    var fid = fieldid.replace('fitem_','');
     var pid = parentid.replace('fitem_','');
-    var did = defaultid.replace('fitem_','');
+    var fid = fieldid.replace('fitem_','');
 
-    function populate(shortname, fieldid, parentid) {
-        var name =  Y.one('#id_shortname').get('value');
+    function populate(parentid, fieldid) {
+        var parentname = Y.one(parentid).one('select').get('value');
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var response = JSON.parse(xhr.responseText);
 
-                // Remove all existing items.
-                Y.one(fieldid).one('> .fselect').one(fid).get('childNodes').remove();
+                var sel = Y.one(fieldid).one('> .fselect').one(fid);
 
-                var i = 1;
+                // First save what was there
+                var previous = sel.get('value');
+
+                // Remove all existing items.
+                sel.get('childNodes').remove();
+
+                // If optional add a blank first entry
+                if (isoptional){
+                    sel.append('<option value="">none</option>');
+                }
+                var i = 0;
                 for (item in response[0]) {
                     var val = response[0][item];
-                    if (val == 'checked') {
-                        Y.one(fieldid).one('> .fselect').one(fid).append('<option value="' + item.trim() + '">' + val + '</option>');
-                    } else {
-                        Y.one(fieldid).one('> .fselect').one(fid).append('<option value="' + i + '">' + val + '</option>');
-                    }
+                    sel.append('<option value="' + i + '">' + val + '</option>');
                     i++;
                 }
-                // Set the default if its there.
-                Y.one(fieldid).one('> .fselect').one(fid).set('value', response[2]);
-                // This is only for the multicheckbox qualification type.
-                // Remove all existing items.
-                if (Y.one(defaultid).one('> .fselect') ){
-                    Y.one(defaultid).one('> .fselect').one(did).get('childNodes').remove();
-                    for (item in response[1]) {
-                        var val = response[1][item];
-                            Y.one(defaultid).one('> .fselect').one(did).append('<option value="' + item.trim() + '">' + val + '</option>');
-                    }
-                    // Set the default if its there.
-                    Y.one(defaultid).one('> .fselect').one(did).set('value', response[3]);
-                }
+                sel.set('value', previous);
             }
         };
         var field = {
-            name: name,
-            shortname: shortname
+            parentname: parentname
         }
 
         xhr.open('POST', M.cfg.wwwroot + '/user/profile/field/branching/ajax.php', true);
@@ -133,11 +144,10 @@ M.profile_field_branching_options.init = function(Y, fieldid, parentid, defaulti
     }
 
     // Run at page load.
-    populate(Y.one(parentid).one('> .fselect').one(pid).get('value'), fieldid, parentid);
+    populate(parentid, fieldid);
 
     // Run on change.
     Y.one(parentid).on('change', function(e) {
-        var shortname = this.one('> .fselect').one(pid).get('value');
-        populate(shortname, fieldid, parentid);
+        populate(parentid, fieldid);
     });
 };
