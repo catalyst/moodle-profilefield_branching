@@ -66,8 +66,7 @@ class profile_define_branching extends profile_define_base {
         $form->setType('param3', PARAM_TEXT);
 
         // Param 4 is the value to show field on.
-        $array = array('Choose...');
-        $options = $array;
+        $options = array('' => 'Choose...', 0 => '@');
         $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
 
