@@ -16,6 +16,8 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             });
         }
 
+        // TODO checkbox group logic here
+
         Y.all(fieldid).setStyle('display', 'none');
         Y.all(groupid).setStyle('display', 'none');
         Y.all(fieldclass).setStyle('display', 'none');
@@ -38,6 +40,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
                 Y.one(fieldid + ' select').simulate("change");
             });
         }
+        // TODO add checkbox group logic here
     }
 
     /*
@@ -49,13 +52,13 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         // Test for selects
         var select = Y.one('[name=profile_field_'+parentid+']');
         if (select){
-            return select.get('value') == desired;
+            return select.get('options').item(select.get('selectedIndex')).get('text') == desired;
         }
 
         // Test for matrix checkboxes
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
-            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input')._nodes[1*desired].checked;
+            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').one('input[name=profile_field_'+parentid+'::'+desired+']').get('checked') == 1;
         }
 
         return false;
@@ -129,7 +132,7 @@ M.profile_field_branching_options.init = function(Y, parentid, fieldid, isoption
                 var i = 0;
                 for (item in response[0]) {
                     var val = response[0][item];
-                    sel.append('<option value="' + i + '">' + val + '</option>');
+                    sel.append('<option value="' + val + '">' + val + '</option>');
                     i++;
                 }
                 sel.set('value', previous);
