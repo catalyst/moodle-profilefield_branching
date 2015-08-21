@@ -28,11 +28,16 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
         Y.all(fieldid).setStyle('display', '');
         Y.all(groupid).setStyle('display', '');
-        Y.all(fieldid + ' input').set('value', '');
         Y.all(fieldid).set('placeholder', "empty");
         var fieldclass = fieldid.replace('#fitem_', '.');
         Y.all(fieldclass).setStyle('display', '');
-        Y.all(fieldclass).set('value', '');
+        if (Y.all(fieldclass).get('value') == '@'){;
+          Y.all(fieldclass).set('value', '');
+        }
+        var input2 = Y.one(fieldid + ' input');
+        if (input2 && input2.get('value') == '@'){
+          input2.set('value', '');
+        }
 
         if (Y.one(fieldid + ' select')) {
             Y.all(fieldid + ' option[value=@]').remove();
@@ -49,6 +54,10 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
      */
     function isDesired(parentid, desired) {
 
+        if (parentid == "0"){
+            return false;
+        }
+
         // Test for selects
         var select = Y.one('[name=profile_field_'+parentid+']');
         if (select){
@@ -58,7 +67,14 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         // Test for matrix checkboxes
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
-            return Y.one('#fgroup_id_profile_field_' + parentid + '_grp').one("input[data-name='" + desired + "']").get('checked');
+            var check = checkgroup.one("input[data-name='" + desired + "']");
+            if (check) {
+                return check.get('checked');
+            } else {
+                if (console) {
+                //  console.log('Error: ' + parentid + ' : ' + desired);
+                }
+            }
         }
 
         return false;
@@ -68,11 +84,29 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
      * Determine if this fields dependancies are met, and if so hide or show.
      */
     function check(){
-
-        if (isDesired(parent1id, desired1) && (!parent2id || isDesired(parent2id, desired2) ) ) {
-            show(fieldid);
+        if (0 && console){
+            console.log(parent1id);
+            console.log(desired1);
+            console.log(parent2id);
+            console.log(desired2);
+        }
+        if ((!parent1id || parent1id == "0")  || isDesired(parent1id, desired1)) {
+            if ((!parent2id || parent2id == '0' ) || isDesired(parent2id, desired2) ) {
+                show(fieldid);
+                if (console){
+                    console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
+                }
+            } else {
+                hide(fieldid);
+                if (console){
+                    console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+                }
+            }
         } else {
             hide(fieldid);
+            if (console){
+                console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+            }
         }
     }
 

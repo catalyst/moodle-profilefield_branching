@@ -56,6 +56,7 @@ class profile_field_branching extends profile_field_base {
             if (isset($this->field->param2)) {
                 $options = $this->field->param2;
                 $options = str_replace('<br />', '<br>', $options);
+                $options = preg_replace('/(<br>)\n++$/', '', $options);
                 $options = explode("<br>", $options);
             } else {
                 $options = array();
@@ -110,6 +111,7 @@ class profile_field_branching extends profile_field_base {
                     format_string($this->field->name),
                     $this->options
                 );
+                $mform->setType($this->inputname, PARAM_RAW);
                 break;
             case USERPF_BRANCHING_SECONDARY:
                 $mform->addElement(
@@ -118,6 +120,7 @@ class profile_field_branching extends profile_field_base {
                     format_string($this->field->name),
                     $this->options
                 );
+                $mform->setType($this->inputname, PARAM_MULTILANG);
                 break;
             case USERPF_BRANCHING_DECLARATION:
 
@@ -282,10 +285,40 @@ class profile_field_branching extends profile_field_base {
         $property = "profile_field_" . $this->field->param3;
         $value = $this->field->param4;
 
-        if (!is_siteadmin($USER) && isset($usernew->{$property}) && $usernew->$property == $value) {
+
+        if (!is_siteadmin($USER)){
+            if ($this->field->param1 == USERPF_BRANCHING_DECLARATION){
+
+                $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
+                $options = $parent->param2;
+
+                if (isset($parent->param2)) {
+                    $options = $parent->param2;
+                    $options = str_replace('<br />', '<br>', $options);
+                    $options = preg_replace('/(<br>)\n++$/', '', $options);
+                    $options = explode("<br>", $options);
+                    array_unshift($options, '');
+                } else {
+                    $options = array();
+                }
+
+                // Does the first conditional match the desired value?
+                // Note this is not robust and will only work with the checkbox parent type.
+                $matches = array_search($this->field->param4, $options) == $usernew->$property;
+
+                if ($matches && empty($usernew->{$this->inputname})){
+                    $errors[$this->inputname.'[parent]'] = get_string('invaliddeclare', 'profilefield_branching');
+                    $errors[$this->inputname] = get_string('invaliddeclare', 'profilefield_branching');
+                }
+
+            } else {
             // The firts item in the select menus has the value of '0'. This needs to be valid.
-            if (empty($usernew->{$this->inputname}) && $usernew->{$this->inputname} !== '0') {
-                $errors[$this->inputname] = get_string('invalidentry', 'profilefield_branching');
+                if ( isset($usernew->{$property}) &&
+                    $usernew->$property == $value &&
+                    empty($usernew->{$this->inputname}) &&
+                    $usernew->{$this->inputname} !== '0') {
+                    $errors[$this->inputname] = get_string('invalidentry', 'profilefield_branching');
+                }
             }
         }
 
@@ -329,12 +362,8 @@ class profile_field_branching extends profile_field_base {
                 } else {
                     $desired = $value;
                 }
-                // Getting weird errors where some menus report the value, others the option, so just check for both.
-                if (isset($usernew->{$property}) && ($usernew->$property == $desired || $usernew->$property == $value)) {
-                    $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
-                } else {
-                    $usernew->{$this->inputname} = '';
-                }
+
+                $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
                 break;
             case USERPF_BRANCHING_SECONDARY:
                     $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);

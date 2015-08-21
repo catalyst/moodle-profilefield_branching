@@ -59,6 +59,7 @@ class profile_define_branching extends profile_define_base {
             array(USERPF_BRANCHING_CHECKLIST)
         );
         $parents = array();
+        array_unshift($parents, 'Choose...');
         foreach ($fields as $field) {
             $parents[$field->shortname] = "$field->name ($field->shortname)";
         }
@@ -72,7 +73,6 @@ class profile_define_branching extends profile_define_base {
 
 
         // Param 5 is the second optional parent
-        array_unshift($parents, 'Choose...');
         $form->addElement('select', 'param5', get_string('branchfield2', 'profilefield_branching'), $parents);
         $form->setType('param5', PARAM_TEXT);
 
