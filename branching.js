@@ -12,7 +12,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             Y.one(fieldid + ' select').prepend('<option value="@">@</option>');
             Y.one(fieldid + ' select').set("selectedIndex", 0);
             YUI().use('node-event-simulate', function(Y) {
-                Y.one(fieldid + ' select').simulate("change");
+                Y.fire('aia:change');
             });
         }
 
@@ -42,7 +42,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         if (Y.one(fieldid + ' select')) {
             Y.all(fieldid + ' option[value=@]').remove();
             YUI().use('node-event-simulate', function(Y) {
-                Y.one(fieldid + ' select').simulate("change");
+                Y.fire('aia:change');
             });
         }
         // TODO add checkbox group logic here
@@ -117,11 +117,13 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         var select = Y.one('[name=profile_field_'+parentid+']');
         if (select){
             select.on('change', check);
+            select.on('aiachange', check);
         }
 
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
             Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input').on('change', check);
+            Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input').on('aia:change', check);
         }
 
     }
