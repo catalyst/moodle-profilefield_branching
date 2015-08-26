@@ -56,8 +56,9 @@ class profile_field_branching extends profile_field_base {
             if (isset($this->field->param2)) {
                 $options = $this->field->param2;
                 $options = str_replace('<p>', '', $options);
-                $options = str_replace('</p>', '', $options);
+                $options = str_replace('</p>', '<br>', $options);
                 $options = str_replace('<br />', '<br>', $options);
+                $options = str_replace('<br><br>', '<br>', $options);
                 $options = preg_replace('/(<br>)\n++$/', '', $options);
                 $options = trim($options, '<br>');
                 $options = explode("<br>", $options);

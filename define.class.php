@@ -67,7 +67,12 @@ class profile_define_branching extends profile_define_base {
         $form->setType('param3', PARAM_TEXT);
 
         // Param 4 is the value to show field on.
-        $options = array('' => 'Choose...', 0 => '@');
+        // These fields need to have an initial array with more options than the javascript loads,
+        // otherwise it won't save. So we need to do this.
+        $options = array('Choose...');
+        for ($i = 0; $i < 50; $i++) {
+            $array[] = '@';
+        }
         $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
 
@@ -120,7 +125,7 @@ class profile_define_branching extends profile_define_base {
             // Editors are stupid and inconsistant, so change everything to be the same.
             $data->param2['text'] = str_replace("\r", '', $data->param2['text']);
             $data->param2['text'] = str_replace("<p>", '', $data->param2['text']);
-            $data->param2['text'] = str_replace("</p>", '', $data->param2['text']);
+            $data->param2['text'] = str_replace("</p>", '<br />', $data->param2['text']);
             $data->param2['text'] = str_replace("<br>", '<br />', $data->param2['text']);
 
             // Check that we have at least 2 options.
