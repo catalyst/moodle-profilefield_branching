@@ -349,7 +349,7 @@ class profile_field_branching extends profile_field_base {
             case USERPF_BRANCHING_CHECKLIST:
             case USERPF_BRANCHING_DECLARATION:
                 $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
-                if ($parent->datatype == 'menu') {
+                if (!empty($parent) && $parent->datatype == 'menu') {
                     $list = explode("\n", $parent->param1);
                     // Need to rekey the array;
                     $i = 1;
