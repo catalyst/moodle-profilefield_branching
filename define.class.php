@@ -71,7 +71,7 @@ class profile_define_branching extends profile_define_base {
         // otherwise it won't save. So we need to do this.
         $options = array('Choose...');
         for ($i = 0; $i < 50; $i++) {
-            $array[] = '@';
+            $options[] = '@';
         }
         $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
@@ -157,7 +157,11 @@ class profile_define_branching extends profile_define_base {
         // into a single json value for storage.
         $json = array();
         $json['param5'] = $data->param5;
-        $json['param6'] = $data->param6;
+        if (isset($data->param6)) {
+            $json['param6'] = $data->param6;
+        } else {
+            $json['param6'] = "";
+        }
         $data->param5 = json_encode($json);
         unset($data->param6);
 
@@ -179,6 +183,15 @@ class profile_define_branching extends profile_define_base {
 
         global $DB;
 
+        // When the form first loads make sure at least the currect option is an option so it's gets selected
+        // $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
+        $param4 = $mform->getElementValue('param4');
+        $mform->getElement('param4')->addOption($param4[0], $param4[0]);
+        $param6 = $mform->getElementValue('param6');
+        if (!empty($param6)) {
+            $mform->getElement('param6')->addOption($param6[0], $param6[0]);
+        }
+
         $id = required_param('id', PARAM_INT);
         if ($id === 0) {
             return;
@@ -191,11 +204,7 @@ class profile_define_branching extends profile_define_base {
                 $mform->setDefault($key, $value);
             }
         }
-
-        // When the form first loads make sure at least the currect option is an option so it's gets selected
-        // $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
-        $param4 = $mform->getElementValue('param4');
-        $mform->getElement('param4')->addOption($param4[0], $param4[0]);
+        // This needs to be done again after param5 loads, so that the json value is loaded properly.
         $param6 = $mform->getElementValue('param6');
         if (!empty($param6)) {
             $mform->getElement('param6')->addOption($param6[0], $param6[0]);
