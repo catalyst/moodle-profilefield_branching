@@ -308,11 +308,13 @@ class profile_field_branching extends profile_field_base {
 
                 // Does the first conditional match the desired value?
                 // Note this is not robust and will only work with the checkbox parent type.
-                $matches = array_search($this->field->param4, $options) == $usernew->$property;
+                if (isset($usernew->$property)) {
+                    $matches = array_search($this->field->param4, $options) == $usernew->$property;
 
-                if ($matches && empty($usernew->{$this->inputname})){
-                    $errors[$this->inputname.'[parent]'] = get_string('invaliddeclare', 'profilefield_branching');
-                    $errors[$this->inputname] = get_string('invaliddeclare', 'profilefield_branching');
+                    if ($matches && empty($usernew->{$this->inputname})){
+                        $errors[$this->inputname.'[parent]'] = get_string('invaliddeclare', 'profilefield_branching');
+                        $errors[$this->inputname] = get_string('invaliddeclare', 'profilefield_branching');
+                    }
                 }
 
             } else {
