@@ -22,8 +22,6 @@ define('AJAX_SCRIPT', 1);
 require_once('../../../../config.php');
 require_once($CFG->dirroot . '/user/profile/field/branching/locallib.php');
 
-require_login();
-
 $response = null;
 
 $PAGE->set_context(null);
