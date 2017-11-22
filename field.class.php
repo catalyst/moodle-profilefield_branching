@@ -41,7 +41,7 @@ class profile_field_branching extends profile_field_base {
      * @param int $fieldid
      * @param int $userid
      */
-    public function profile_field_branching($fieldid = 0, $userid = 0) {
+    public function __construct($fieldid = 0, $userid = 0) {
         global $DB;
         // First call parent constructor.
         $this->profile_field_base($fieldid, $userid);
