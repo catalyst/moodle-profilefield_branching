@@ -268,18 +268,14 @@ class profile_field_branching extends profile_field_base {
      * @return int options key for the menu
      */
     public function convert_external_data($value) {
-        if (!$mform->elementExists($this->inputname)) {
-            $retval = array_search($value, $this->options);
+        $retval = array_search($value, $this->options);
 
-            // If value is not found in options then return null, so that it can be handled
-            // later by edit_save_data_preprocess.
-            if ($retval === false) {
-                $retval = null;
-            }
-            return $retval;
-        } else {
-            parent::convert_external_data($value);
+        // If value is not found in options then return null, so that it can be handled
+        // later by edit_save_data_preprocess.
+        if ($retval === false) {
+            $retval = null;
         }
+        return $retval;
     }
 
     function edit_validate_field($usernew) {
