@@ -44,7 +44,7 @@ class profile_field_branching extends profile_field_base {
     public function __construct($fieldid = 0, $userid = 0) {
         global $DB;
         // First call parent constructor.
-        $this->profile_field_base($fieldid, $userid);
+        parent::__construct($fieldid, $userid);
 
         // Only need to do this for select types.
         if (isset($this->field->param1)
