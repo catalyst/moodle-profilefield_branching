@@ -445,7 +445,11 @@ WTF is all this crap?
             // This sets the mform field to required -- but it is not set on the db in {user_info_field} required => 1.
             $requiredifvisible = $this->field->param7;
             if ($requiredifvisible) {
-                $mform->addRule($this->inputname, get_string('required'), 'required', null, 'server');
+
+                // Bypass the rule for admins too.
+                if ($this->userid == $USER->id || isguestuser() && !is_siteadmin($USER)) {
+                    $mform->addRule($this->inputname, get_string('required'), 'required', null, 'server');
+                }
             }
         }
     }
