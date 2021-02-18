@@ -28,6 +28,11 @@ $string['branchvalue'] = 'Response to branch from';
 $string['branchfield2'] = 'Second parent question';
 $string['branchvalue2'] = 'Second response to branch from';
 $string['fieldtype'] = 'Type of input';
+$string['first_response_required'] = 'Is the first reponse required?';
+$string['first_response_required_help'] = 'Enable if you want to force users to fill in required fields in their profile.
+
+To prevent account lockouts these requirements are not enforced for primary admin and users that cannot update their profile.
+Required fields are not required during account creation, instead if necessary users are asked to provide missing information after their first log in.';
 $string['invalidentry'] = 'Please provide a value. This field is required based on your selections';
 $string['invaliddeclare'] = 'You must agree to the declaration.';
 $string['itemname'] = 'Secondary branching options';

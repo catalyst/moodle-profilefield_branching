@@ -76,6 +76,9 @@ class profile_define_branching extends profile_define_base {
         $form->addElement('select', 'param4', get_string('branchvalue', 'profilefield_branching'), $options);
         $form->setType('param4', PARAM_TEXT);
 
+        // Param 7 is the third optional value, required when the parent question matches the response.
+        $form->addElement('selectyesno', 'param7', get_string('first_response_required', 'profilefield_branching'));
+        $form->addHelpButton('param7', 'first_response_required', 'profilefield_branching');
 
         // Param 5 is the second optional parent
         $form->addElement('select', 'param5', get_string('branchfield2', 'profilefield_branching'), $parents);
@@ -162,8 +165,16 @@ class profile_define_branching extends profile_define_base {
         } else {
             $json['param6'] = "";
         }
+
+        if (isset($data->param7)) {
+            $json['param7'] = $data->param7;
+        } else {
+            $json['param7'] = "";
+        }
+
         $data->param5 = json_encode($json);
         unset($data->param6);
+        unset($data->param7);
 
         return $data;
     }
@@ -177,7 +188,7 @@ class profile_define_branching extends profile_define_base {
     }
 
     /**
-     * Get the param5 json and split into param5 and param6.
+     * Get the param5 json and split into param5, param6 and param7.
      */
     public function define_after_data(&$mform) {
 
@@ -190,6 +201,10 @@ class profile_define_branching extends profile_define_base {
         $param6 = $mform->getElementValue('param6');
         if (!empty($param6)) {
             $mform->getElement('param6')->addOption($param6[0], $param6[0]);
+        }
+        $param7 = $mform->getElementValue('param7');
+        if (!empty($param7)) {
+            $mform->getElement('param7')->addOption($param7[0], $param7[0]);
         }
 
         $id = required_param('id', PARAM_INT);

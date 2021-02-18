@@ -175,6 +175,7 @@ class profile_field_branching extends profile_field_base {
             $json = json_decode($this->field->param5);
             $this->field->param5 = isset($json->param5) ? $json->param5 : '';
             $this->field->param6 = isset($json->param6) ? $json->param6 : '';
+            $this->field->param7 = isset($json->param7) ? $json->param7 : '';
         }
     }
 
@@ -437,6 +438,14 @@ WTF is all this crap?
                 $mform->addRule($this->inputname.'[parent]', get_string('required'), 'required', null, 'server');
             } else {
                 $mform->addRule($this->inputname, get_string('required'), 'required', null, 'client');
+            }
+
+        } else {
+            // New option, 'Is the first response required?'.
+            // This sets the mform field to required -- but it is not set on the db in {user_info_field} required => 1.
+            $requiredifvisible = $this->field->param7;
+            if ($requiredifvisible) {
+                $mform->addRule($this->inputname, get_string('required'), 'required', null, 'server');
             }
         }
     }
