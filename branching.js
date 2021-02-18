@@ -2,6 +2,8 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, parent2id, desired2) {
 
+    var logging = M.cfg.developerdebug;
+
     // Hides a dependant field and sets all it's data to @
     function hide(fieldid) {
         Y.all(fieldid + ' input').set('value', '@');
@@ -11,9 +13,6 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         if (Y.one(fieldid + ' select')) {
             Y.one(fieldid + ' select').prepend('<option value="@">@</option>');
             Y.one(fieldid + ' select').set("selectedIndex", 0);
-            YUI().use('node-event-simulate', function(Y) {
-                Y.fire('aia:change');
-            });
         }
 
         // TODO checkbox group logic here
@@ -41,9 +40,6 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
 
         if (Y.one(fieldid + ' select')) {
             Y.all(fieldid + ' option[value=@]').remove();
-            YUI().use('node-event-simulate', function(Y) {
-                Y.fire('aia:change');
-            });
         }
         // TODO add checkbox group logic here
     }
@@ -64,6 +60,12 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             return select.get('options').item(select.get('selectedIndex')).get('text') == desired;
         }
 
+        // Test for locked fields
+        var locked = Y.one('[id=fitem_id_profile_field_'+parentid+'] [class=felement fstatic]').getContent()
+        if (locked) {
+            return locked == desired;
+        }
+
         // Test for matrix checkboxes
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
@@ -71,8 +73,8 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             if (check) {
                 return check.get('checked');
             } else {
-                if (console) {
-                //  console.log('Error: ' + parentid + ' : ' + desired);
+                if (logging) {
+                    window.console.log('Error: ' + parentid + ' : ' + desired);
                 }
             }
         }
@@ -84,28 +86,28 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
      * Determine if this fields dependancies are met, and if so hide or show.
      */
     function check(){
-        if (0 && console){
-            console.log(parent1id);
-            console.log(desired1);
-            console.log(parent2id);
-            console.log(desired2);
+        if (logging){
+            window.console.log(parent1id);
+            window.console.log(desired1);
+            window.console.log(parent2id);
+            window.console.log(desired2);
         }
         if ((!parent1id || parent1id == "0")  || isDesired(parent1id, desired1)) {
             if ((!parent2id || parent2id == '0' ) || isDesired(parent2id, desired2) ) {
                 show(fieldid);
-                if (console){
-                    console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
+                if (logging){
+                    window.console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
                 }
             } else {
                 hide(fieldid);
-                if (console){
-                    console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+                if (logging){
+                    window.console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
                 }
             }
         } else {
             hide(fieldid);
-            if (console){
-                console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+            if (logging){
+                window.console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
             }
         }
     }
@@ -117,13 +119,11 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         var select = Y.one('[name=profile_field_'+parentid+']');
         if (select){
             select.on('change', check);
-            select.on('aiachange', check);
         }
 
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
             Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input').on('change', check);
-            Y.one('#fgroup_id_profile_field_' + parentid + '_grp').all('input').on('aia:change', check);
         }
 
     }

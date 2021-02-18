@@ -44,7 +44,7 @@ class profile_field_branching extends profile_field_base {
     public function __construct($fieldid = 0, $userid = 0) {
         global $DB;
         // First call parent constructor.
-        $this->profile_field_base($fieldid, $userid);
+        parent::__construct($fieldid, $userid);
 
         // Only need to do this for select types.
         if (isset($this->field->param1)
@@ -175,6 +175,7 @@ class profile_field_branching extends profile_field_base {
             $json = json_decode($this->field->param5);
             $this->field->param5 = isset($json->param5) ? $json->param5 : '';
             $this->field->param6 = isset($json->param6) ? $json->param6 : '';
+            $this->field->param7 = isset($json->param7) ? $json->param7 : '';
         }
     }
 
@@ -330,8 +331,22 @@ class profile_field_branching extends profile_field_base {
     public function edit_save_data($usernew) {
         global $DB;
 
+        // Field not present in form, probably locked and invisible.
         if (!isset($usernew->{$this->inputname})) {
-            // Field not present in form, probably locked and invisible - skip it.
+            /// Set the value to nothing as this will be passed in the mform POST params.
+            $usernew->{$this->inputname} = '';
+
+            $qparams = [
+                'userid' => $usernew->id,
+                'fieldid' => $this->field->id
+            ];
+
+            // Query to see if this field was set prior, and remove that data.
+            // The user is no longer saving this part of the branching data.
+            $staleformfieldid = $DB->get_field('user_info_data', 'id', $qparams);
+            if ($staleformfieldid) {
+                $DB->delete_records('user_info_data', ['id' => $staleformfieldid]);
+            }
             return;
         }
 
@@ -437,6 +452,18 @@ WTF is all this crap?
                 $mform->addRule($this->inputname.'[parent]', get_string('required'), 'required', null, 'server');
             } else {
                 $mform->addRule($this->inputname, get_string('required'), 'required', null, 'client');
+            }
+
+        } else {
+            // New option, 'Is the first response required?'.
+            // This sets the mform field to required -- but it is not set on the db in {user_info_field} required => 1.
+            $requiredifvisible = $this->field->param7;
+            if ($requiredifvisible) {
+
+                // Bypass the rule for admins too.
+                if ($this->userid == $USER->id || isguestuser() && !is_siteadmin($USER)) {
+                    $mform->addRule($this->inputname, get_string('required'), 'required', null, 'server');
+                }
             }
         }
     }
