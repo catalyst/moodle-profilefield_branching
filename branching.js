@@ -60,6 +60,12 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             return select.get('options').item(select.get('selectedIndex')).get('text') == desired;
         }
 
+        // Test for locked fields
+        var locked = Y.one('[id=fitem_id_profile_field_'+parentid+'] [class=felement fstatic]').getContent()
+        if (locked) {
+            return locked == desired;
+        }
+
         // Test for matrix checkboxes
         var checkgroup = Y.one('#fgroup_id_profile_field_' + parentid + '_grp');
         if (checkgroup){
