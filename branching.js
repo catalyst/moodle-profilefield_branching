@@ -2,7 +2,7 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, parent2id, desired2) {
 
-    var logging = false;
+    var logging = M.cfg.developerdebug;
 
     // Hides a dependant field and sets all it's data to @
     function hide(fieldid) {
