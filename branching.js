@@ -2,6 +2,8 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, parent2id, desired2) {
 
+    var debugging = false;
+
     // Hides a dependant field and sets all it's data to @
     function hide(fieldid) {
         Y.all(fieldid + ' input').set('value', '@');
@@ -65,8 +67,8 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             if (check) {
                 return check.get('checked');
             } else {
-                if (console) {
-                //  console.log('Error: ' + parentid + ' : ' + desired);
+                if (debugging) {
+                    window.console.log('Error: ' + parentid + ' : ' + desired);
                 }
             }
         }
@@ -78,28 +80,28 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
      * Determine if this fields dependancies are met, and if so hide or show.
      */
     function check(){
-        if (0 && console){
-            console.log(parent1id);
-            console.log(desired1);
-            console.log(parent2id);
-            console.log(desired2);
+        if (debugging){
+            window.console.log(parent1id);
+            window.console.log(desired1);
+            window.console.log(parent2id);
+            window.console.log(desired2);
         }
         if ((!parent1id || parent1id == "0")  || isDesired(parent1id, desired1)) {
             if ((!parent2id || parent2id == '0' ) || isDesired(parent2id, desired2) ) {
                 show(fieldid);
-                if (console){
-                    console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
+                if (debugging){
+                    window.console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
                 }
             } else {
                 hide(fieldid);
-                if (console){
-                    console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+                if (debugging){
+                    window.console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
                 }
             }
         } else {
             hide(fieldid);
-            if (console){
-                console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
+            if (debugging){
+                window.console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
             }
         }
     }
