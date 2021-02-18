@@ -331,8 +331,22 @@ class profile_field_branching extends profile_field_base {
     public function edit_save_data($usernew) {
         global $DB;
 
+        // Field not present in form, probably locked and invisible.
         if (!isset($usernew->{$this->inputname})) {
-            // Field not present in form, probably locked and invisible - skip it.
+            /// Set the value to nothing as this will be passed in the mform POST params.
+            $usernew->{$this->inputname} = '';
+
+            $qparams = [
+                'userid' => $usernew->id,
+                'fieldid' => $this->field->id
+            ];
+
+            // Query to see if this field was set prior, and remove that data.
+            // The user is no longer saving this part of the branching data.
+            $staleformfieldid = $DB->get_field('user_info_data', 'id', $qparams);
+            if ($staleformfieldid) {
+                $DB->delete_records('user_info_data', ['id' => $staleformfieldid]);
+            }
             return;
         }
 
