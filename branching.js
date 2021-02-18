@@ -2,7 +2,7 @@ M.profile_field_branching = {};
 
 M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, parent2id, desired2) {
 
-    var debugging = false;
+    var logging = false;
 
     // Hides a dependant field and sets all it's data to @
     function hide(fieldid) {
@@ -73,7 +73,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
             if (check) {
                 return check.get('checked');
             } else {
-                if (debugging) {
+                if (logging) {
                     window.console.log('Error: ' + parentid + ' : ' + desired);
                 }
             }
@@ -86,7 +86,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
      * Determine if this fields dependancies are met, and if so hide or show.
      */
     function check(){
-        if (debugging){
+        if (logging){
             window.console.log(parent1id);
             window.console.log(desired1);
             window.console.log(parent2id);
@@ -95,18 +95,18 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         if ((!parent1id || parent1id == "0")  || isDesired(parent1id, desired1)) {
             if ((!parent2id || parent2id == '0' ) || isDesired(parent2id, desired2) ) {
                 show(fieldid);
-                if (debugging){
+                if (logging){
                     window.console.log('Showing '+fieldid + ' because ' + parent1id + ' = ' + desired1);
                 }
             } else {
                 hide(fieldid);
-                if (debugging){
+                if (logging){
                     window.console.log('Hiding2 '+fieldid + ' because ' + parent1id + ' != ' + desired1);
                 }
             }
         } else {
             hide(fieldid);
-            if (debugging){
+            if (logging){
                 window.console.log('Hiding '+fieldid + ' because ' + parent1id + ' != ' + desired1);
             }
         }
