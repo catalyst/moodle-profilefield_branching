@@ -333,8 +333,7 @@ class profile_field_branching extends profile_field_base {
 
         // Field not present in form, probably locked and invisible.
         if (!isset($usernew->{$this->inputname})) {
-            /// Set the value to nothing as this will be passed in the mform POST params.
-            $usernew->{$this->inputname} = '';
+            // Field not present in form, probably locked and invisible - skip it.
 
             $qparams = [
                 'userid' => $usernew->id,
