@@ -33,6 +33,7 @@ $string['first_response_required_help'] = 'Enable if you want to force users to 
 
 To prevent account lockouts these requirements are not enforced for primary admin and users that cannot update their profile.
 Required fields are not required during account creation, instead if necessary users are asked to provide missing information after their first log in.';
+$string['header_set_required_fields'] = 'Complete your profile';
 $string['invalidentry'] = 'Please provide a value. This field is required based on your selections';
 $string['invaliddeclare'] = 'You must agree to the declaration.';
 $string['itemname'] = 'Secondary branching options';
