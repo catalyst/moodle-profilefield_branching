@@ -176,7 +176,7 @@ class utility {
      * @param bool $preventredirect set to true in scripts that can not redirect (CLI, rss feeds, etc.), throws exceptions
      */
     private function user_fully_setup_redirect($user, $setwantsurltome, $preventredirect) {
-        global $SITE, $SESSION;
+        global $SESSION;
 
         if ($preventredirect) {
             throw new moodle_exception('usernotfullysetup');
@@ -187,10 +187,39 @@ class utility {
 
         $params = [
             'id' => $user->id,
-            'course' => $SITE->id,
         ];
-        $url = new moodle_url('/user/edit.php', $params);
+
+        $url = new moodle_url('/user/profile/field/branching/set_required_fields.php', $params);
 
         redirect($url);
+    }
+
+    /**
+     * Returns an object with the custom profile fields set for the given user.
+     *
+     * @param integer $userid
+     * @param bool $onlyinuserobject True if you only want the ones in $USER.
+     * @return stdClass
+     */
+    public static function profile_user_record($userid, $onlyinuserobject = true) {
+        global $CFG, $DB;
+
+        $usercustomfields = new \stdClass();
+
+        // The userid, used with the profile_save_data() call.
+        $usercustomfields->id = $userid;
+
+        if ($fields = $DB->get_records('user_info_field')) {
+            foreach ($fields as $field) {
+                require_once($CFG->dirroot.'/user/profile/field/'.$field->datatype.'/field.class.php');
+                $newfield = 'profile_field_'.$field->datatype;
+                $formfield = new $newfield($field->id, $userid);
+                if (!$onlyinuserobject || $formfield->is_user_object_data()) {
+                    $usercustomfields->{$formfield->inputname} = $formfield->datakey;
+                }
+            }
+        }
+
+        return $usercustomfields;
     }
 }
