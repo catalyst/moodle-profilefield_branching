@@ -332,7 +332,7 @@ class profile_field_branching extends profile_field_base {
         global $DB;
 
         // Field not present in form, probably locked and invisible.
-        if (!isset($usernew->{$this->inputname})) {
+        if (!isset($usernew->{$this->inputname}) || empty($usernew->{$this->inputname})) {
             // Field not present in form, probably locked and invisible - skip it.
 
             $qparams = [
