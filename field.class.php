@@ -219,7 +219,16 @@ class profile_field_branching extends profile_field_base {
         if ($this->field->param1 == USERPF_BRANCHING_CHECKLIST ||
             $this->field->param1 == USERPF_BRANCHING_SECONDARY
         ) {
-            return isset($this->options[$data]) ? $this->options[$data] : null;
+            $value = isset($this->options[$data]) ? $this->options[$data] : null;
+
+            // We've encountered data perhaps via reading the user profile field object, and not normally saving via the branching plugin.
+            if (is_null($value) && in_array($data, $this->options)) {
+                // Instead of the data being a key, we have the real value to return instead, as long as it exists in the options array.
+                return $data;
+            } else {
+                // Value was found in the end as it was a key, just send it.
+                return $value;
+            }
         } else {
             return $data;
         }
@@ -332,7 +341,7 @@ class profile_field_branching extends profile_field_base {
         global $DB;
 
         // Field not present in form, probably locked and invisible.
-        if (!isset($usernew->{$this->inputname})) {
+        if (!isset($usernew->{$this->inputname}) || empty($usernew->{$this->inputname})) {
             // Field not present in form, probably locked and invisible - skip it.
 
             $qparams = [
