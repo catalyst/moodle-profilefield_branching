@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
 
 /**
@@ -189,6 +191,7 @@ class profile_define_branching extends profile_define_base {
 
     /**
      * Get the param5 json and split into param5, param6 and param7.
+     * @param moodleform $mform
      */
     public function define_after_data(&$mform) {
 

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
 
 /**
@@ -24,7 +26,6 @@ require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
  * @author     Tim Price <timprice@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class profile_field_branching extends profile_field_base {
 
     /** @var array $options */
@@ -170,6 +171,9 @@ class profile_field_branching extends profile_field_base {
         );
     }
 
+    /**
+     * This splits the param5 encoded json, and populates the other class attributes.
+     */
     public function split_param5() {
         if (!isset($this->field->param6) && isset($this->field->param5)) {
             $json = json_decode($this->field->param5);
@@ -179,8 +183,10 @@ class profile_field_branching extends profile_field_base {
         }
     }
 
+    /**
+     * This calls the split_param5 and parent load_data() function.
+     */
     public function load_data() {
-
         parent::load_data();
         $this->split_param5();
     }
@@ -288,16 +294,21 @@ class profile_field_branching extends profile_field_base {
         return $retval;
     }
 
-    function edit_validate_field($usernew) {
+    /**
+     * Validates the field.
+     *
+     * @param stdClass $usernew
+     * @return array|string
+     */
+    public function edit_validate_field($usernew) {
         global $DB, $USER;
 
         $errors = array();
         $property = "profile_field_" . $this->field->param3;
         $value = $this->field->param4;
 
-
-        if (!is_siteadmin($USER)){
-            if ($this->field->param1 == USERPF_BRANCHING_DECLARATION){
+        if (!is_siteadmin($USER)) {
+            if ($this->field->param1 == USERPF_BRANCHING_DECLARATION) {
 
                 $parent = $DB->get_record('user_info_field', array('shortname' => $this->field->param3));
                 $options = $parent->param2;
@@ -317,14 +328,14 @@ class profile_field_branching extends profile_field_base {
                 if (isset($usernew->$property)) {
                     $matches = array_search($this->field->param4, $options) == $usernew->$property;
 
-                    if ($matches && empty($usernew->{$this->inputname})){
+                    if ($matches && empty($usernew->{$this->inputname})) {
                         $errors[$this->inputname.'[parent]'] = get_string('invaliddeclare', 'profilefield_branching');
                         $errors[$this->inputname] = get_string('invaliddeclare', 'profilefield_branching');
                     }
                 }
 
             } else {
-            // The firts item in the select menus has the value of '0'. This needs to be valid.
+                // The first item in the select menus has the value of '0'. This needs to be valid.
                 if ( isset($usernew->{$property}) &&
                     $usernew->$property == $value &&
                     empty($usernew->{$this->inputname}) &&
@@ -337,6 +348,12 @@ class profile_field_branching extends profile_field_base {
         return $errors;
     }
 
+    /**
+     * Saves the field to the db.
+     *
+     * @param stdClass $usernew
+     * @return mixed|void
+     */
     public function edit_save_data($usernew) {
         global $DB;
 
@@ -392,29 +409,6 @@ class profile_field_branching extends profile_field_base {
                 break;
             case USERPF_BRANCHING_SECONDARY:
                     $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
-/*
-WTF is all this crap?
-                    if (is_array($usernew->$property)) {
-                        // Get rid of spaces in array keys and do array_keys() as we go
-                        $temp = array();
-                        foreach ($usernew->$property as $key => $value) {
-                            $temp[] = trim($key);
-                        }
-                        if (in_array($this->field->param5, $temp)) {
-                            $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
-                        } else {
-                            $usernew->{$this->inputname} = '';
-                        }
-                    }
-                    else {
-                        $haystack = $usernew->$property . "\n"; // This is so that we don't match Cert II when searching for Cert I.
-                        if (isset($usernew->{$property}) && strstr($haystack, $this->field->param5 . "\n") !== false) {
-                            $usernew->{$this->inputname} = $this->edit_save_data_preprocess($usernew->{$this->inputname}, $data);
-                        } else {
-                            $usernew->{$this->inputname} = '';
-                        }
-                    }
-*/
                 break;
         }
         // Do the standard stuff, but without the param assign.
