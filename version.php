@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    profilefield
- * @subpackage branching
+ * Profile field branching version file.
+ *
  * @copyright  2015 onwards Catalyst IT
  * @author     Tim Price
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

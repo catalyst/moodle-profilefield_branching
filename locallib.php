@@ -17,9 +17,9 @@
 /**
  * Library definitions and functions for profilefield_branching
  *
- * @package     profilefield
- * @subpackage  branching
  * @author      Marcus Boon<marcus@catalyst-au.net>
+ * @copyright   Catalyst IT
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;

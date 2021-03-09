@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// This file is used for AJAX callbacks.
+/**
+ * This file is used for AJAX callbacks.
+ *
+ * @package    profilefield_branching
+ * @copyright  2015 onwards Catalyst IT
+ * @author     Tim Price <timprice@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 define('MOODLE_INTERNAL', 1);
 define('AJAX_SCRIPT', 1);

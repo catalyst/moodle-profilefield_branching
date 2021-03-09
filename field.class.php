@@ -26,7 +26,6 @@ require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
  * @author     Tim Price <timprice@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class profile_field_branching extends profile_field_base {
 
     /** @var array $options */
@@ -172,6 +171,9 @@ class profile_field_branching extends profile_field_base {
         );
     }
 
+    /**
+     * This splits the param5 encoded json, and populates the other class attributes.
+     */
     public function split_param5() {
         if (!isset($this->field->param6) && isset($this->field->param5)) {
             $json = json_decode($this->field->param5);
@@ -181,8 +183,10 @@ class profile_field_branching extends profile_field_base {
         }
     }
 
+    /**
+     * This calls the split_param5 and parent load_data() function.
+     */
     public function load_data() {
-
         parent::load_data();
         $this->split_param5();
     }
@@ -290,6 +294,12 @@ class profile_field_branching extends profile_field_base {
         return $retval;
     }
 
+    /**
+     * Validates the field.
+     *
+     * @param stdClass $usernew
+     * @return array|string
+     */
     public function edit_validate_field($usernew) {
         global $DB, $USER;
 
@@ -338,6 +348,12 @@ class profile_field_branching extends profile_field_base {
         return $errors;
     }
 
+    /**
+     * Saves the field to the db.
+     *
+     * @param stdClass $usernew
+     * @return mixed|void
+     */
     public function edit_save_data($usernew) {
         global $DB;
 

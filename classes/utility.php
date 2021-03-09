@@ -41,7 +41,7 @@ class utility {
     /**
      * Hook via moodlelib.php function get_plugins_with_function('after_require_login').
      *
-     * @param $user
+     * @param stdClass $user
      * @param bool $setwantsurltome Define if we want to set $SESSION->wantsurl, defaults to
      *             true. Used to avoid (=false) some scripts (file.php...) to set that variable,
      *             in order to keep redirects working properly. MDL-14495
@@ -56,7 +56,7 @@ class utility {
     /**
      * Checks the user profile data, and parent branching field to determine if the required fields have content.
      *
-     * @param $user
+     * @param stdClass $user
      * @return bool $fullysetup true is the user has been setup
      */
     public function user_fully_setup_check($user) {
@@ -97,7 +97,7 @@ class utility {
      * The core database does not hold enough columns and early on in this plugin the last field was used as a JSON dump.
      * This is pulling param7 out of param5.
      *
-     * @param $param5
+     * @param string $param5
      * @return bool
      */
     private function obtain_param7($param5) {
@@ -117,8 +117,8 @@ class utility {
      * The parent field is what determines the branching. If the parent field matches the branch data, then it means we
      * must look for the child fields required setting.
      *
-     * @param $user
-     * @param $record
+     * @param stdClass $user
+     * @param stdClass $record
      * @return bool
      */
     private function check_parent_field_for_data($user, $record) {
@@ -149,8 +149,8 @@ class utility {
     /**
      * Checks that the record exists, meaning we've met the requirement for profile field data set in the child.
      *
-     * @param $user
-     * @param $fieldid
+     * @param stdClass $user
+     * @param int $fieldid
      * @return mixed
      */
     private function check_that_data_is_set($user, $fieldid) {
@@ -169,7 +169,7 @@ class utility {
     /**
      * The redirect to user profile page function.
      *
-     * @param $user
+     * @param stdClass $user
      * @param bool $setwantsurltome Define if we want to set $SESSION->wantsurl, defaults to
      *             true. Used to avoid (=false) some scripts (file.php...) to set that variable,
      *             in order to keep redirects working properly. MDL-14495

@@ -191,6 +191,7 @@ class profile_define_branching extends profile_define_base {
 
     /**
      * Get the param5 json and split into param5, param6 and param7.
+     * @param moodleform $mform
      */
     public function define_after_data(&$mform) {
 

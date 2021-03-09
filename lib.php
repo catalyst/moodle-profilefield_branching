@@ -27,6 +27,12 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * Hook via moodlelib.php the 'require_login' function.
  * After making a call to get_plugins_with_function, 'after_require_login'.
+ *
+ * @param int $courseorid
+ * @param bool $autologinguest
+ * @param int $cm
+ * @param bool $setwantsurltome
+ * @param bool $preventredirect
  */
 function profilefield_branching_after_require_login($courseorid, $autologinguest, $cm, $setwantsurltome, $preventredirect) {
     global $USER, $SESSION;
