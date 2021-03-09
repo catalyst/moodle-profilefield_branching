@@ -60,10 +60,10 @@ if ($form->is_submitted()) {
     $data = $form->get_data();
 
     // Only save data for the logged in $USER at the time.
-    $userdata = (object) array_merge((array) $data, (array) $USER);
+    $data->id = $USER->id;
 
     // The userid is part of the $USER object. This should only add fields with the profile_field_ prefix that are specified in the rendered form.
-    profile_save_data($userdata);
+    profile_save_data($data);
 
     // Redirect to the base moodle page. If the profile was not saved or setup correctly, the hook 'after_require_login' will fire off.
     redirect(new moodle_url('/'));
