@@ -2,11 +2,7 @@ name: Moodle plugin CI for VERSION2
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
-on:
-  push:
-    branches: [ VERSION2 ]
-  pull_request:
-    branches: [ VERSION2 ]
+on: push
 
 jobs:
   citest:
