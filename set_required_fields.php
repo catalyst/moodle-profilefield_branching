@@ -25,27 +25,43 @@
 
 
 use profilefield_branching\form\set_require_fields_form;
+use profilefield_branching\utility;
 
 require_once(__DIR__.'/../../../../config.php');
+
+// Not the full require_login() check, as it creates a cyclic loop around profilefield_branching_after_require_login().
+if ((!isloggedin() or isguestuser())) {
+    redirect(get_login_url());
+}
+
+// The require_login() function would usually check this. But we don't want to get stuck in a loop. Is this user actually setup?
+$fullysetup = (new utility())->user_fully_setup_check($USER);
+if ($fullysetup) {
+    redirect(new moodle_url('/'));
+}
 
 $context = context_system::instance();
 $PAGE->set_context($context);
 $output = $PAGE->get_renderer('core');
 
-$id = required_param('id', PARAM_INT);
-
-$baseurl = new moodle_url('/user/profile/field/branching/set_required_fields.php', ['id' => $id]);
+$baseurl = new moodle_url('/user/profile/field/branching/set_required_fields.php');
 $PAGE->set_url($baseurl);
 
 $customdata = [
     'user' => $USER,
-    'fields' => \profilefield_branching\utility::profile_user_record($USER->id, true)
+    'fields' => utility::profile_user_record($USER->id, true),
 ];
 
 $form = new set_require_fields_form($baseurl, $customdata);
 
-if ($data = $form->get_data()) {
-    profile_save_data($data);
+if ($form->is_submitted()) {
+    $data = $form->get_data();
+
+    // Only save data for the logged in $USER at the time.
+    $userdata = (object) array_merge((array) $data, (array) $USER);
+
+    // The userid is part of the $USER object. This should only add fields with the profile_field_ prefix that are specified in the rendered form.
+    profile_save_data($userdata);
 
     // Redirect to the base moodle page. If the profile was not saved or setup correctly, the hook 'after_require_login' will fire off.
     redirect(new moodle_url('/'));

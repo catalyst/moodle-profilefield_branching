@@ -59,7 +59,7 @@ class utility {
      * @param $user
      * @return bool $fullysetup true is the user has been setup
      */
-    private function user_fully_setup_check($user) {
+    public function user_fully_setup_check($user) {
         global $DB, $SESSION;
 
         $fullysetup = true;
@@ -185,11 +185,7 @@ class utility {
             $SESSION->wantsurl = qualified_me();
         }
 
-        $params = [
-            'id' => $user->id,
-        ];
-
-        $url = new moodle_url('/user/profile/field/branching/set_required_fields.php', $params);
+        $url = new moodle_url('/user/profile/field/branching/set_required_fields.php');
 
         redirect($url);
     }
