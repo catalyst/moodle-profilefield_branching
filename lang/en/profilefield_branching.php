@@ -38,5 +38,6 @@ $string['header_set_required_fields'] = 'Complete your profile';
 $string['invalidentry'] = 'Please provide a value. This field is required based on your selections';
 $string['invaliddeclare'] = 'You must agree to the declaration.';
 $string['itemname'] = 'Secondary branching options';
+$string['nothingtosetup'] = 'Nothing to set in the profile';
 $string['param2'] = 'List of options/ default size';
 $string['pluginname'] = 'Branching field input';

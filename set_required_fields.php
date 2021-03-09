@@ -29,25 +29,31 @@ use profilefield_branching\utility;
 
 require_once(__DIR__.'/../../../../config.php');
 
-// Not the full require_login() check, as it creates a cyclic loop around profilefield_branching_after_require_login().
-if ((!isloggedin() or isguestuser())) {
-    redirect(get_login_url());
-}
-
-// The require_login() function would usually check this. But we don't want to get stuck in a loop. Is this user actually setup?
-$fullysetup = (new utility())->user_fully_setup_check($USER);
-if ($fullysetup) {
-    redirect(new moodle_url('/'));
-}
-
-require_capability('profilefield/branching:managebranchingprofilefields', context_system::instance());
-
 $context = context_system::instance();
 $PAGE->set_context($context);
 $output = $PAGE->get_renderer('core');
 
 $baseurl = new moodle_url('/user/profile/field/branching/set_required_fields.php');
 $PAGE->set_url($baseurl);
+
+// Not the full require_login() check, as it creates a cyclic loop around profilefield_branching_after_require_login().
+if ((!isloggedin() or isguestuser())) {
+    echo $output->header();
+    echo $output->heading(get_string('loggedinnot'));
+    echo $output->footer();
+    die();
+}
+
+// The require_login() function would usually check this. But we don't want to get stuck in a loop. Is this user actually setup?
+$fullysetup = (new utility())->user_fully_setup_check($USER);
+if ($fullysetup) {
+    echo $output->header();
+    echo $output->heading(get_string('nothingtosetup', 'profilefield_branching'));
+    echo $output->footer();
+    die();
+}
+
+require_capability('profilefield/branching:managebranchingprofilefields', context_system::instance());
 
 $customdata = [
     'user' => $USER,
