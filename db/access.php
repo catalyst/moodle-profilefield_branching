@@ -15,16 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    profilefield
- * @subpackage branching
- * @copyright  2015 onwards Catalyst IT
- * @author     Tim Price
+ * Capabilities for profilefield_branching.
+ *
+ * @package    profilefield_branching
+ * @author     Nicholas Hoobin <nicholashoobin@catalyst-au.net>
+ * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021030900;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2011112900;        // Requires this Moodle version
-$plugin->component = 'profilefield_branching'; // Full name of the plugin (used for diagnostics)
-
+$capabilities = array(
+    // Allows for the user to manage user profile custom fields.
+    'profilefield/branching:managebranchingprofilefields' => array(
+        'riskbitmask'   => RISK_CONFIG,
+        'captype'       => 'write',
+        'contextlevel'  => CONTEXT_SYSTEM,
+        'archetypes'    => array(
+            'user' => CAP_ALLOW
+        ),
+    ),
+);

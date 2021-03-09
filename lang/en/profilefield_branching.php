@@ -24,6 +24,7 @@
  */
 
 $string['branchfield'] = 'Parent question';
+$string['branching:managebranchingprofilefields'] = 'Manage branching profile fields';
 $string['branchvalue'] = 'Response to branch from';
 $string['branchfield2'] = 'Second parent question';
 $string['branchvalue2'] = 'Second response to branch from';

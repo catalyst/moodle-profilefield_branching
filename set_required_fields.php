@@ -40,6 +40,8 @@ if ($fullysetup) {
     redirect(new moodle_url('/'));
 }
 
+require_capability('profilefield/branching:managebranchingprofilefields', context_system::instance());
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 $output = $PAGE->get_renderer('core');

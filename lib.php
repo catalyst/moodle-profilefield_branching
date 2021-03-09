@@ -35,7 +35,14 @@ function profilefield_branching_after_require_login($courseorid, $autologinguest
         && $SESSION->profilefield_branching_user_is_fully_setup;
 
     if (!$userfullysetup) {
-        (new \profilefield_branching\utility())->after_require_login($USER, $setwantsurltome, $preventredirect);
+        if (has_capability('profilefield/branching:managebranchingprofilefields', context_system::instance())) {
+            // Only redirect if the user has the ability to modify branched profile fields.
+            (new \profilefield_branching\utility())->after_require_login($USER, $setwantsurltome, $preventredirect);
+
+        } else {
+            // We can't edit the fields, so this user is a set up as they can be.
+            $SESSION->profilefield_branching_user_is_fully_setup = true;
+        }
     }
 
     // We could now say, yes the user is fully setup and return nothing from this callback.
