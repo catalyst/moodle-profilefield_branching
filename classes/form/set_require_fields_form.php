@@ -50,10 +50,6 @@ class set_require_fields_form extends \moodleform {
 
         profile_definition($mform, $user->id);
 
-        // The userid, used with the profile_save_data() call.
-        $mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
-
         $this->add_action_buttons(false);
 
         $this->set_data($fields);
