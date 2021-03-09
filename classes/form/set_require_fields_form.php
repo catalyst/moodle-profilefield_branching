@@ -25,9 +25,9 @@
 
 namespace profilefield_branching\form;
 
-require_once($CFG->libdir . "/formslib.php");
-
 defined('MOODLE_INTERNAL') || die;
+
+require_once($CFG->libdir . "/formslib.php");
 
 /**
  * Set required fields form.

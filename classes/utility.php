@@ -48,7 +48,7 @@ class utility {
      * @param bool $preventredirect set to true in scripts that can not redirect (CLI, rss feeds, etc.), throws exceptions
      */
     public function after_require_login($user, $setwantsurltome, $preventredirect) {
-        if(!$this->user_fully_setup_check($user)) {
+        if (!$this->user_fully_setup_check($user)) {
             $this->user_fully_setup_redirect($user, $setwantsurltome, $preventredirect);
         }
     }

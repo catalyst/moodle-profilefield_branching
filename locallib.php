@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library definitions and functions for profilefield_branching 
+ * Library definitions and functions for profilefield_branching
  *
  * @package     profilefield
  * @subpackage  branching

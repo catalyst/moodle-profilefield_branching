@@ -34,7 +34,7 @@ $response = array();
 
 // This ajax returns an array of options and thats it.
 
-if (!$parent){
+if (!$parent) {
     echo json_encode(array());
     exit;
 }
