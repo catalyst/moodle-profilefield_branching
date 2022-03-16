@@ -4,14 +4,14 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
 
     var logging = M.cfg.developerdebug;
 
-    // Hides a dependant field and sets all it's data to @
+    // Hides a dependant field and sets all it's data to an empty string
     function hide(fieldid) {
-        Y.all(fieldid + ' input').set('value', '@');
+        Y.all(fieldid + ' input').set('value', '');
         var groupid = fieldid.replace('fitem_', 'fgroup_') + '_parent';
         var fieldclass = fieldid.replace('#fitem_', '.');
 
         if (Y.one(fieldid + ' select')) {
-            Y.one(fieldid + ' select').prepend('<option value="@">@</option>');
+            Y.one(fieldid + ' select').prepend('<option value=""></option>');
             Y.one(fieldid + ' select').set("selectedIndex", 0);
         }
 
@@ -30,16 +30,10 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         Y.all(fieldid).set('placeholder', "empty");
         var fieldclass = fieldid.replace('#fitem_', '.');
         Y.all(fieldclass).setStyle('display', '');
-        if (Y.all(fieldclass).get('value') == '@'){;
-          Y.all(fieldclass).set('value', '');
-        }
         var input2 = Y.one(fieldid + ' input');
-        if (input2 && input2.get('value') == '@'){
-          input2.set('value', '');
-        }
 
         if (Y.one(fieldid + ' select')) {
-            Y.all(fieldid + ' option[value=@]').remove();
+            Y.all(fieldid + ' option[value=""]').remove();
         }
         // TODO add checkbox group logic here
     }
