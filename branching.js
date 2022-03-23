@@ -11,7 +11,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         var fieldclass = fieldid.replace('#fitem_', '.');
 
         if (Y.one(fieldid + ' select')) {
-            Y.one(fieldid + ' select').prepend('<option value=""></option>');
+            Y.one(fieldid + ' select').prepend('<option value="0"></option>');
             Y.one(fieldid + ' select').set("selectedIndex", 0);
         }
 
@@ -33,7 +33,7 @@ M.profile_field_branching.init = function(Y, fieldid, parent1id, desired1, paren
         var input2 = Y.one(fieldid + ' input');
 
         if (Y.one(fieldid + ' select')) {
-            Y.all(fieldid + ' option[value=""]').remove();
+            Y.all(fieldid + ' option[value="0"]').remove();
         }
         // TODO add checkbox group logic here
     }
