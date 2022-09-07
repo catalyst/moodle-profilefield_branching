@@ -443,10 +443,10 @@ class profile_field_branching extends profile_field_base {
     /**
      * Sets the required flag for the field in the form object
      *
-     * @param moodleform $mform instance of the moodleform class
+     * @param moodleQuickForm $mform instance of the moodleform class
      */
     public function edit_field_set_required($mform) {
-        global $USER;
+        global $DB, $USER;
         if ($this->is_required() && ($this->userid == $USER->id || isguestuser()) && !is_siteadmin($USER)  ) {
             if ($this->field->param1 == USERPF_BRANCHING_DECLARATION) {
 
@@ -461,9 +461,33 @@ class profile_field_branching extends profile_field_base {
             // This sets the mform field to required -- but it is not set on the db in {user_info_field} required => 1.
             $requiredifvisible = $this->field->param7;
             if ($requiredifvisible) {
+                $req = false;
+                // Warning HACK. We need to get the POSTed Data, to decide IF other data is required.
+                // This is still safe because it is all in 1 request, its just about how its treated.
+                $parentval = optional_param('profile_field_' . $this->field->param3, null, PARAM_TEXT);
+                if (!$parentval) {
+                    // We should check if this is a locked value that is already set in the DB.
+                    // In this case, we need to pull from there, it wont be in POST.
+                     // Obtain the field so we can hunt for the data.
+                    $select = $DB->sql_compare_text('shortname') . ' = ' . $DB->sql_compare_text(':shortname');
+                    $field = $DB->get_record_select('user_info_field', $select, ['shortname' => $this->field->param3]);
+                    $params = [
+                        'userid' => $USER->id,
+                        'fieldid' => $field->id,
+                    ];
+                    $infodata = $DB->get_record('user_info_data', $params);
+                    if (!$infodata->data) {
+                        // Always required in a completely blank form.
+                        $req = true;
+                    } else if ($infodata->data === $this->field->param4) {
+                        $req = true;
+                    }
+                } else if($parentval === $this->field->param4) {
+                    $req = true;
+                }
 
                 // Bypass the rule for admins too.
-                if ($this->userid == $USER->id || isguestuser() && !is_siteadmin($USER)) {
+                if ($req && ($this->userid == $USER->id || isguestuser() && !is_siteadmin($USER))) {
                     $mform->addRule($this->inputname, get_string('required'), 'required', null, 'server');
                 }
             }
