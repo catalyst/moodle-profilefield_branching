@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use engage_survey\result\option;
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/user/profile/field/branching/locallib.php');
