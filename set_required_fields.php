@@ -61,7 +61,7 @@ $customdata = [
 
 $form = new set_require_fields_form($baseurl, $customdata);
 
-if ($form->is_submitted()) {
+if ($form->is_submitted() && $form->is_validated()){
     $data = $form->get_data();
 
     // Only save data for the logged in $USER at the time.
