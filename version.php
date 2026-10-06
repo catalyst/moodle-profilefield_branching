@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021030900;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2021030900.01;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2011112900;        // Requires this Moodle version
 $plugin->component = 'profilefield_branching'; // Full name of the plugin (used for diagnostics)
 
