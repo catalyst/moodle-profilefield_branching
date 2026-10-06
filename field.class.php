@@ -43,9 +43,12 @@ class profile_field_branching extends profile_field_base {
      * @param int $userid
      */
     public function __construct($fieldid = 0, $userid = 0) {
-        global $DB;
+        global $DB, $PAGE;
         // First call parent constructor.
         parent::__construct($fieldid, $userid);
+
+        // Ensure context is set to a real context (for mutlilang). Null sets to system context only if not already set.
+        $PAGE->set_context(null);
 
         // Only need to do this for select types.
         if (isset($this->field->param1)
