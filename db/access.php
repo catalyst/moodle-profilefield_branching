@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = array(
     // Allows for the user to manage user profile custom fields.
     'profilefield/branching:managebranchingprofilefields' => array(
-        'riskbitmask'   => RISK_CONFIG,
         'captype'       => 'write',
         'contextlevel'  => CONTEXT_SYSTEM,
         'archetypes'    => array(
